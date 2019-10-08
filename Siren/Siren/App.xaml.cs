@@ -4,6 +4,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Siren.Services;
 using Siren.Views;
+using Siren.Views.Forms;
 
 namespace Siren
 {
@@ -24,7 +25,7 @@ namespace Siren
                 DependencyService.Register<MockDataStore>();
             else
                 DependencyService.Register<AzureDataStore>();
-            MainPage = new MainPage();
+            MainPage = new LoginPage();
         }
 
         protected override void OnStart()
