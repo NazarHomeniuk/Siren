@@ -8,8 +8,12 @@
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
     <PackageReference Include="Syncfusion.Xamarin.Buttons" Version="17.3.0.14" />
+    <PackageReference Include="Syncfusion.Xamarin.Cards" Version="17.3.0.14" />
     <PackageReference Include="Syncfusion.Xamarin.Core" Version="17.3.0.14" />
+    <PackageReference Include="Syncfusion.Xamarin.DataSource" Version="17.3.0.14" />
+    <PackageReference Include="Syncfusion.Xamarin.SfBadgeView" Version="17.3.0.14" />
     <PackageReference Include="Syncfusion.Xamarin.SfComboBox" Version="17.3.0.14" />
+    <PackageReference Include="Syncfusion.Xamarin.SfListView" Version="17.3.0.14" />
   </ItemGroup>
 
 </Project>

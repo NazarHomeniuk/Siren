@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Siren.Views.Navigation"
+             x:Class="Siren.Views.Navigation.BottomNavigationPage"
+             xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
+             xmlns:profile="clr-namespace:Siren.Views.Profile;assembly=Siren"
+             xmlns:chat="clr-namespace:Siren.Views.Chat;assembly=Siren"
+             android:TabbedPage.ToolbarPlacement="Bottom"
+             android:TabbedPage.BarSelectedItemColor="{DynamicResource PrimaryColor}"
+             android:TabbedPage.BarItemColor="{DynamicResource Gray-600}"
+             BarBackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
+    <TabbedPage.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </TabbedPage.Resources>
+    <profile:ContactProfilePage Title="Profile">
+        <profile:ContactProfilePage.IconImageSource>
+            <FontImageSource FontFamily="{StaticResource FontIcons}"
+                                 Glyph="{StaticResource ProfileIcon}"
+                                 Size="16"/>
+        </profile:ContactProfilePage.IconImageSource>
+    </profile:ContactProfilePage>
+    <chat:RecentChatPage Title="Direct">
+        <chat:RecentChatPage.IconImageSource>
+            <FontImageSource FontFamily="{StaticResource FontIcons}"
+                             Glyph="{StaticResource ChatIcon}"
+                             Size="16"/>
+        </chat:RecentChatPage.IconImageSource>
+    </chat:RecentChatPage>
+    <local:SettingsPage Title="Settings">
+        <local:SettingsPage.IconImageSource>
+            <FontImageSource FontFamily="{StaticResource FontIcons}"
+                                 Glyph="{StaticResource SettingsIcon}"
+                                 Size="16"/>
+        </local:SettingsPage.IconImageSource>
+    </local:SettingsPage>
+</TabbedPage>

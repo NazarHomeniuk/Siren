@@ -1,4 +1,6 @@
-﻿using Xamarin.Forms.Internals;
+﻿using System;
+using Siren.ViewModels.Forms;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
 namespace Siren.Views.Forms
@@ -16,6 +18,11 @@ namespace Siren.Views.Forms
         public LoginPage()
         {
             InitializeComponent();
+            BindingContext = new LoginPageViewModel
+            {
+                Navigation = Navigation,
+                Page = this
+            };
         }
     }
 }

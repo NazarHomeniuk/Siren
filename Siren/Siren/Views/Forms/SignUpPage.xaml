@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <ContentPage
-    x:Class="Siren.Views.Forms.LoginPage"
+    x:Class="Siren.Views.Forms.SignUpPage"
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:border="clr-namespace:Syncfusion.XForms.Border;assembly=Syncfusion.Core.XForms"
@@ -11,6 +11,7 @@
     xmlns:gradient="clr-namespace:Syncfusion.XForms.Graphics;assembly=Syncfusion.Core.XForms"
     xmlns:local="clr-namespace:Siren.Views.Forms"
     xmlns:viewModel="clr-namespace:Siren.ViewModels.Forms"
+    Title="Sign Up"
     BackgroundImageSource="{core:OnPlatformOrientationStringValue Default=LoginBackground.png,
                                                                   iOSPhoneLandscape=LoginBackground-Landscape.png,
                                                                   iOSTabletLandscape=LoginBackground-Landscape.png}"
@@ -26,9 +27,9 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <!--  Binding context for login page  -->
+    <!--  Binding context for sign-up page  -->
     <ContentPage.BindingContext>
-        <viewModel:LoginPageViewModel />
+        <viewModel:SignUpPageViewModel />
     </ContentPage.BindingContext>
 
     <ContentPage.Content>
@@ -53,115 +54,67 @@
                     VerticalOptions="FillAndExpand"
                     WidthRequest="{OnPlatform Default='-1',
                                               UWP='350'}">
-
-                    <Grid RowSpacing="0" VerticalOptions="CenterAndExpand">
-
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+                    <StackLayout
+                        HorizontalOptions="Center"
+                        Spacing="24"
+                        VerticalOptions="CenterAndExpand">
 
                         <!--  Label to display the title of this page  -->
                         <Label
                             FontFamily="{StaticResource Montserrat-SemiBold}"
                             FontSize="20"
-                            HorizontalTextAlignment="Center"
+                            HorizontalOptions="Center"
                             Style="{StaticResource LabelStyle}"
-                            Text="Log In" />
+                            Text="Sign Up" />
 
                         <!--  Label to display the description of this page  -->
                         <Label
-                            Grid.Row="1"
-                            Margin="0,8"
+                            Margin="0,-16,0,8"
                             FontFamily="{StaticResource Montserrat-Medium}"
                             HorizontalTextAlignment="Center"
                             Style="{StaticResource LabelStyle}"
-                            Text="Let's get to work" />
+                            Text="Create an account to start doing more" />
+
+                        <!--  Entry to get username from user  -->
+                        <border:SfBorder BorderColor="{Binding Source={x:Reference NameEntry}, Path=IsFocused, Converter={StaticResource ColorConverter}, ConverterParameter=0}" Style="{StaticResource SfBorderStyle}">
+                            <control:BorderlessEntry
+                                x:Name="NameEntry"
+                                Placeholder="Name"
+                                Style="{StaticResource EntryStyle}"
+                                Text="{Binding Name}" />
+                        </border:SfBorder>
 
                         <!--  Entry to get email ID from user  -->
-                        <local:EmailEntry Grid.Row="2" Padding="0,24" />
+                        <local:EmailEntry />
 
                         <!--  Entry to get password from user  -->
-                        <border:SfBorder
-                            Grid.Row="3"
-                            BorderColor="{Binding Source={x:Reference PasswordEntry}, Path=IsFocused, Converter={StaticResource ColorConverter}, ConverterParameter=0}"
-                            Style="{StaticResource SfBorderStyle}">
+                        <border:SfBorder BorderColor="{Binding Source={x:Reference PasswordEntry}, Path=IsFocused, Converter={StaticResource ColorConverter}, ConverterParameter=0}" Style="{StaticResource SfBorderStyle}">
                             <control:BorderlessEntry
                                 x:Name="PasswordEntry"
-                                IsPassword="True"
+                                IsPassword="true"
                                 Placeholder="Password"
                                 Style="{StaticResource EntryStyle}"
                                 Text="{Binding Password}" />
                         </border:SfBorder>
 
-                        <!--  Forgot password link  -->
-                        <Label
-                            x:Name="ForgotPasswordLabel"
-                            Grid.Row="4"
-                            Margin="0,16"
-                            FontFamily="{StaticResource Montserrat-SemiBold}"
-                            FontSize="12"
-                            HorizontalOptions="End"
-                            Text="FORGOT PASSWORD?"
-                            TextColor="White">
-                            <Label.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}" CommandParameter="{x:Reference ForgotPasswordLabel}" />
-                            </Label.GestureRecognizers>
-                        </Label>
+                        <!--  Entry to get the confirm password from user  -->
+                        <border:SfBorder BorderColor="{Binding Source={x:Reference ConfirmPasswordEntry}, Path=IsFocused, Converter={StaticResource ColorConverter}, ConverterParameter=0}" Style="{StaticResource SfBorderStyle}">
+                            <control:BorderlessEntry
+                                x:Name="ConfirmPasswordEntry"
+                                IsPassword="true"
+                                Placeholder="Confirm Password"
+                                Style="{StaticResource EntryStyle}"
+                                Text="{Binding ConfirmPassword}" />
+                        </border:SfBorder>
 
-                        <!--  Login button  -->
+                        <!--  Sign-up button  -->
                         <buttons:SfButton
-                            x:Name="LoginButton"
-                            Grid.Row="5"
-                            Margin="0,16"
-                            Command="{Binding LoginCommand}"
-                            Style="{StaticResource SfButtonStyle}"
-                            Text="LOG IN"
-                        />
-
-
-                        <!--<Label
-                            Grid.Row="6"
-                            FontFamily="{StaticResource Montserrat-Medium}"
-                            HorizontalTextAlignment="Center"
-                            Style="{StaticResource LabelStyle}"
-                            Text="Or create an account using social media" />
-
-                        --><!--  Login through facebook account  --><!--
-                        <buttons:SfButton
-                            Grid.Row="7"
-                            Margin="0,16,0,16"
-                            BackgroundColor="{DynamicResource FacebookBlue}"
-                            Command="{Binding SocialMediaLoginCommand}"
+                            Command="{Binding SignUpCommand}"
                             CornerRadius="20"
-                            HeightRequest="40">
-                            <buttons:SfButton.Content>
-                                <StackLayout
-                                    HorizontalOptions="CenterAndExpand"
-                                    Orientation="Horizontal"
-                                    VerticalOptions="Center">
-                                    <Label
-                                        FontFamily="{StaticResource FontIcons}"
-                                        FontSize="18"
-                                        Text="&#xe735;"
-                                        TextColor="{DynamicResource Gray-White}"
-                                        VerticalTextAlignment="Center" />
-                                    <Label
-                                        FontFamily="{StaticResource Montserrat-Medium}"
-                                        FontSize="16"
-                                        Text="Login with Facebook"
-                                        TextColor="{DynamicResource Gray-White}" />
-                                </StackLayout>
-                            </buttons:SfButton.Content>
-                        </buttons:SfButton>-->
-
-                    </Grid>
+                            FontFamily="{StaticResource Montserrat-SemiBold}"
+                            Style="{StaticResource SfButtonStyle}"
+                            Text="REGISTER" />
+                    </StackLayout>
 
                     <StackLayout
                         HorizontalOptions="Center"
@@ -181,21 +134,18 @@
                             HorizontalOptions="CenterAndExpand"
                             HorizontalTextAlignment="Center"
                             Style="{StaticResource LabelStyle}"
-                            Text="Don't have an account?"
+                            Text="Already have an account?"
                             VerticalTextAlignment="Center" />
 
-                        <!--  Sign-up button  -->
                         <buttons:SfButton
-                            Command="{Binding SignUpCommand}"
+                            Command="{Binding LoginCommand}"
                             CornerRadius="4"
                             Style="{StaticResource SfFlatButtonStyle}"
-                            Text="Sign Up" />
+                            Text="Log In" />
 
                     </StackLayout>
-
                 </StackLayout>
             </ScrollView>
         </Grid>
     </ContentPage.Content>
-
 </ContentPage>

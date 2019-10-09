@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Siren.Views.Forms;
+using Siren.Views.Navigation;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 
@@ -55,6 +57,9 @@ namespace Siren.ViewModels.Forms
             }
         }
 
+        public INavigation Navigation;
+        public Page Page;
+
         #endregion
 
         #region Command
@@ -89,7 +94,9 @@ namespace Siren.ViewModels.Forms
         /// <param name="obj">The Object</param>
         private void LoginClicked(object obj)
         {
-            // Do something
+            App.IsUserLoggedId = true;
+            Navigation.InsertPageBefore(new BottomNavigationPage(), Page);
+            Navigation.PopAsync();
         }
 
         /// <summary>
@@ -98,7 +105,7 @@ namespace Siren.ViewModels.Forms
         /// <param name="obj">The Object</param>
         private void SignUpClicked(object obj)
         {
-            // Do something
+            Navigation.PushAsync(new SignUpPage());
         }
 
         /// <summary>
