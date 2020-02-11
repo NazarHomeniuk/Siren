@@ -1,4 +1,7 @@
-﻿using System;
+using Syncfusion.XForms.UWP.Border;
+using Syncfusion.SfMaps.XForms.UWP;
+using System.Reflection;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -52,7 +55,10 @@ namespace Siren.UWP
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
-                Xamarin.Forms.Forms.Init(e);
+List<Assembly> assembliesToInclude = new List<Assembly>();
+assembliesToInclude.Add(typeof(SfBorderRenderer).GetTypeInfo().Assembly);
+assembliesToInclude.Add(typeof(SfMapsRenderer).GetTypeInfo().Assembly);
+Xamarin.Forms.Forms.Init(e, assembliesToInclude);
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {

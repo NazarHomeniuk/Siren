@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Siren.Contracts.Models.Authorization;
+using Siren.Contracts.Services;
 using Siren.Views.Forms;
 using Siren.Views.Navigation;
 using Xamarin.Forms;
@@ -12,6 +14,10 @@ namespace Siren.ViewModels.Forms
     [Preserve(AllMembers = true)]
     public class LoginPageViewModel : LoginViewModel
     {
+        private readonly IAuthorizationService authorizationService;
+
+        private readonly LoginPage page;
+
         #region Fields
 
         private string password;
@@ -23,8 +29,10 @@ namespace Siren.ViewModels.Forms
         /// <summary>
         /// Initializes a new instance for the <see cref="LoginPageViewModel" /> class.
         /// </summary>
-        public LoginPageViewModel()
+        public LoginPageViewModel(LoginPage page, IAuthorizationService authorizationService)
         {
+            this.page = page;
+            this.authorizationService = authorizationService;
             this.LoginCommand = new Command(this.LoginClicked);
             this.SignUpCommand = new Command(this.SignUpClicked);
             this.ForgotPasswordCommand = new Command(this.ForgotPasswordClicked);
@@ -40,10 +48,7 @@ namespace Siren.ViewModels.Forms
         /// </summary>
         public string Password
         {
-            get
-            {
-                return this.password;
-            }
+            get => this.password;
 
             set
             {
@@ -56,9 +61,6 @@ namespace Siren.ViewModels.Forms
                 this.OnPropertyChanged();
             }
         }
-
-        public INavigation Navigation;
-        public Page Page;
 
         #endregion
 
@@ -92,11 +94,24 @@ namespace Siren.ViewModels.Forms
         /// Invoked when the Log In button is clicked.
         /// </summary>
         /// <param name="obj">The Object</param>
-        private void LoginClicked(object obj)
+        private async void LoginClicked(object obj)
         {
-            App.IsUserLoggedId = true;
-            Navigation.InsertPageBefore(new BottomNavigationPage(), Page);
-            Navigation.PopAsync();
+            var loginRequest = new LoginRequest
+            {
+                Email = Email,
+                Password = password
+            };
+            var result = await authorizationService.Login(loginRequest);
+            if (result.IsSuccess)
+            {
+                App.IsUserLoggedId = true;
+                App.Token = result.Token;
+                Application.Current.MainPage = new NavigationPage(new BottomNavigationPage());
+            }
+            else
+            {
+                await page.DisplayAlert("Error", result.ErrorMessage, "Ok");
+            }
         }
 
         /// <summary>
@@ -105,7 +120,7 @@ namespace Siren.ViewModels.Forms
         /// <param name="obj">The Object</param>
         private void SignUpClicked(object obj)
         {
-            Navigation.PushAsync(new SignUpPage());
+            Application.Current.MainPage = new NavigationPage(new SignUpPage());
         }
 
         /// <summary>

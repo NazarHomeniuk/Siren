@@ -1,3 +1,4 @@
+using Syncfusion.SfMaps.XForms.iOS;
 using Syncfusion.XForms.iOS.Cards;
 using Syncfusion.XForms.iOS.Graphics;
 using Syncfusion.XForms.iOS.BadgeView;
@@ -29,7 +30,9 @@ namespace Siren.iOS
         //
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
-            global::Xamarin.Forms.Forms.Init();
+global::Xamarin.Forms.Forms.Init();
+SfSwitchRenderer.Init();
+SfMapsRenderer.Init();
             SfCardViewRenderer.Init();
             SfBadgeViewRenderer.Init();
             SfListViewRenderer.Init();

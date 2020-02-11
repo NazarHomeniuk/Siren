@@ -1,9 +1,7 @@
-using System;
+using Ninject;
 using Xamarin.Essentials;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 using Siren.Services;
-using Siren.Views;
 using Siren.Views.Forms;
 using Siren.Views.Navigation;
 
@@ -17,25 +15,25 @@ namespace Siren
         //If using other emulators besides stock Google images you may need to adjust the IP address
         public static string AzureBackendUrl =
             DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:5000" : "http://localhost:5000";
+
+        public static string ApiUrl = "http://10.0.2.2:50075/api/";
         public static bool UseMockDataStore = true;
         public static bool IsUserLoggedId { get; set; }
+        public static string Token { get; set; }
+        public static StandardKernel Kernel { get; private set; }
 
         public App()
         {
             InitializeComponent();
+            Kernel = new StandardKernel(new CommonModule());
 
             if (UseMockDataStore)
                 DependencyService.Register<MockDataStore>();
             else
                 DependencyService.Register<AzureDataStore>();
-            if (IsUserLoggedId)
-            {
-                MainPage = new NavigationPage(new BottomNavigationPage());
-            }
-            else
-            {
-                MainPage = new NavigationPage(new LoginPage());
-            }
+            MainPage = IsUserLoggedId
+                ? new NavigationPage(new BottomNavigationPage())
+                : new NavigationPage(new LoginPage());
         }
 
         protected override void OnStart()

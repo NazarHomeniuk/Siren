@@ -11,6 +11,8 @@ namespace Siren.Models.Profile
         /// Gets or sets the profile image path.
         /// </summary>
         public string ImagePath { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
 
         #endregion
     }

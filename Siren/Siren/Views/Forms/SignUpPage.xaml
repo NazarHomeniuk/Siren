@@ -27,11 +27,6 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <!--  Binding context for sign-up page  -->
-    <ContentPage.BindingContext>
-        <viewModel:SignUpPageViewModel />
-    </ContentPage.BindingContext>
-
     <ContentPage.Content>
         <Grid>
             <gradient:SfGradientView Style="{StaticResource SfGradientViewStyle}" />

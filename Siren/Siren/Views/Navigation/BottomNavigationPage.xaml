@@ -6,6 +6,7 @@
              xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
              xmlns:profile="clr-namespace:Siren.Views.Profile;assembly=Siren"
              xmlns:chat="clr-namespace:Siren.Views.Chat;assembly=Siren"
+             xmlns:map="clr-namespace:Siren.Views.Map;assembly=Siren"
              android:TabbedPage.ToolbarPlacement="Bottom"
              android:TabbedPage.BarSelectedItemColor="{DynamicResource PrimaryColor}"
              android:TabbedPage.BarItemColor="{DynamicResource Gray-600}"
@@ -32,11 +33,11 @@
                              Size="16"/>
         </chat:RecentChatPage.IconImageSource>
     </chat:RecentChatPage>
-    <local:SettingsPage Title="Settings">
-        <local:SettingsPage.IconImageSource>
+    <map:MapPage Title="Map">
+        <map:MapPage.IconImageSource>
             <FontImageSource FontFamily="{StaticResource FontIcons}"
-                                 Glyph="{StaticResource SettingsIcon}"
+                                 Glyph="{StaticResource Search}"
                                  Size="16"/>
-        </local:SettingsPage.IconImageSource>
-    </local:SettingsPage>
+        </map:MapPage.IconImageSource>
+    </map:MapPage>
 </TabbedPage>

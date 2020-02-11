@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ninject;
+using Siren.Contracts.Services;
 using Siren.ViewModels.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
@@ -17,12 +18,9 @@ namespace Siren.Views.Forms
         /// </summary>
         public LoginPage()
         {
+            var authorizationService = App.Kernel.Get<IAuthorizationService>();
             InitializeComponent();
-            BindingContext = new LoginPageViewModel
-            {
-                Navigation = Navigation,
-                Page = this
-            };
+            BindingContext = new LoginPageViewModel(this, authorizationService);
         }
     }
 }

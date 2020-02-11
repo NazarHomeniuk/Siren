@@ -1,4 +1,6 @@
-﻿using Siren.ViewModels.Forms;
+﻿using Ninject;
+using Siren.Contracts.Services;
+using Siren.ViewModels.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
@@ -16,11 +18,9 @@ namespace Siren.Views.Forms
         /// </summary>
         public SignUpPage()
         {
+            var authorizationService = App.Kernel.Get<IAuthorizationService>();
             InitializeComponent();
-            BindingContext = new SignUpPageViewModel
-            {
-                Navigation = Navigation
-            };
+            BindingContext = new SignUpPageViewModel(this, authorizationService);
         }
     }
 }

@@ -111,6 +111,7 @@
                                     HorizontalTextAlignment="Start"
                                     LineHeight="{OnPlatform Android=1.5,
                                                             Default=-1}"
+                                    x:Name="ProfileName"
                                     Text="Julia Grant"
                                     TextColor="{DynamicResource Gray-900}"
                                     VerticalOptions="Center"
@@ -162,6 +163,7 @@
                         Grid.Column="1"
                         FontFamily="{StaticResource Montserrat-Medium}"
                         Style="{StaticResource CommonProfileLabelStyle}"
+                        x:Name="EmailLabel"
                         Text="juliagrant@mail.com" />
 
                 </Grid>
