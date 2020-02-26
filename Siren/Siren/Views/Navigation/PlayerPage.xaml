@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:rangeslider="clr-namespace:Syncfusion.SfRangeSlider.XForms;assembly=Syncfusion.SfRangeSlider.XForms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             xmlns:buttons="clr-namespace:Syncfusion.XForms.Buttons;assembly=Syncfusion.Buttons.XForms"
+             BackgroundColor="{DynamicResource Gray-White}"
+             NavigationPage.HasNavigationBar="False"
+             x:Class="Siren.Views.Navigation.PlayerPage">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="70"/>
+                <RowDefinition Height="320"/>
+                <RowDefinition Height="70"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="90"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackLayout Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="250"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackLayout Grid.Column="0" VerticalOptions="Center" HorizontalOptions="End">
+                        <Image Source="mute.png" HeightRequest="20">
+
+                        </Image>
+                    </StackLayout>
+                    <rangeslider:SfRangeSlider
+                            x:Name="VolumeSlider"
+                            Grid.Column="1"
+                            VerticalOptions="Center"
+                            ToolTipPlacement="None"
+                            SnapsTo="Ticks" 
+                            ShowRange="false" 
+                            TickFrequency="1"
+                            Orientation="Horizontal" 
+                            Minimum="0" 
+                            Maximum="15"
+                            Value="{Binding Volume}"
+                            TickPlacement="None"/>
+                    <StackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="Start">
+                        <Image Source="speaker.png" HeightRequest="20">
+
+                        </Image>
+                    </StackLayout>
+                </Grid>
+            </StackLayout>
+            <StackLayout Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="6">
+                <Image HeightRequest="300" Source="{Binding Image}">
+                </Image>
+            </StackLayout>
+            <StackLayout Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="250"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackLayout Grid.Column="1" Grid.Row="0">
+                        <Label Text="{Binding Artist}" FontSize="Title" HorizontalTextAlignment="Center">
+                        </Label>
+                        <Label Text="{Binding Title}" FontSize="Medium" HorizontalTextAlignment="Center">
+                        </Label>
+                    </StackLayout>
+                </Grid>
+            </StackLayout>
+            <StackLayout Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="6">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="300"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label 
+                        VerticalOptions="Center"
+                        HorizontalTextAlignment="Center" 
+                        Grid.Column="0" 
+                        Text="{Binding PositionTimeSpan}"
+                        FontSize="Small">
+                    </Label>
+                    <rangeslider:SfRangeSlider
+                        ToolTipPlacement="None"
+                        Grid.Column="1"
+                        x:Name="RangeSlider"
+                        SnapsTo="Ticks" 
+                        ShowRange="false" 
+                        StepFrequency="1" 
+                        Orientation="Horizontal" 
+                        Minimum="0" 
+                        Maximum="{Binding Duration}"
+                        Value="{Binding Position}"
+                        TickPlacement="None"/>
+                    <Label
+                        VerticalOptions="Center"
+                        HorizontalTextAlignment="Center" 
+                        Grid.Column="2" 
+                        Text="{Binding DurationTimeSpan}" 
+                        FontSize="Small">
+                    </Label>
+                </Grid>
+            </StackLayout>
+            <StackLayout Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="6" HorizontalOptions="Center">
+                <Grid ColumnSpacing="40">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="50"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="20"/>
+                    </Grid.RowDefinitions>
+                    <buttons:SfButton 
+                        Command="{Binding PrevCommand}" 
+                        CornerRadius="50" 
+                        HasShadow="True" 
+                        Text="Prev"
+                        Grid.Row="1" 
+                        Grid.Column="0">
+                        <buttons:SfButton.Content>
+                            <Image Source="previous.png"
+                                   HeightRequest="20" 
+                                   WidthRequest="20"
+                                   HorizontalOptions="Center" 
+                                   VerticalOptions="Center"/>
+                        </buttons:SfButton.Content>
+                    </buttons:SfButton>
+                    <buttons:SfButton 
+                        Command="{Binding PlayPauseCommand}"
+                        CornerRadius="50"
+                        ShowIcon="True" 
+                        HasShadow="True" 
+                        Grid.Row="0" 
+                        Grid.Column="1" 
+                        Grid.RowSpan="3">
+                        <buttons:SfButton.Content>
+                            <Image Source="{Binding PlayImage}" 
+                                   HeightRequest="40" 
+                                   WidthRequest="40"
+                                   HorizontalOptions="Center" 
+                                   VerticalOptions="Center"/>
+                        </buttons:SfButton.Content>
+                    </buttons:SfButton>
+                    <buttons:SfButton 
+                        Command="{Binding NextCommand}" 
+                        CornerRadius="50"
+                        HasShadow="True" 
+                        Text="Next" 
+                        Grid.Row="1" 
+                        Grid.Column="2">
+                        <buttons:SfButton.Content>
+                            <Image Source="next.png" 
+                                   HeightRequest="20" 
+                                   WidthRequest="20"
+                                   HorizontalOptions="Center" 
+                                   VerticalOptions="Center"/>
+                        </buttons:SfButton.Content>
+                    </buttons:SfButton>
+                </Grid>
+            </StackLayout>
+            <StackLayout Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="5">
+                <buttons:SfButton 
+                    Margin="0, 10, 0, 0"
+                    Command="{Binding RepeatCommand}" 
+                    BackgroundColor="Transparent"
+                    HeightRequest="50">
+                    <buttons:SfButton.Content>
+                        <Image Source="{Binding RepeatImage}" 
+                               HeightRequest="30" 
+                               HorizontalOptions="Center" 
+                               VerticalOptions="Center"/>
+                    </buttons:SfButton.Content>
+                </buttons:SfButton>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

@@ -129,7 +129,7 @@ namespace Siren.MobileAppService.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Siren.MobileAppService.Models.Identity.User", b =>
+            modelBuilder.Entity("Siren.Contracts.Models.Identity.User", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
@@ -180,6 +180,36 @@ namespace Siren.MobileAppService.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("Siren.Contracts.Models.Profile.ProfilePhoto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<byte[]>("Image");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ProfilePhotos");
+                });
+
+            modelBuilder.Entity("Siren.Contracts.Models.Profile.Track", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<byte[]>("Data");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tracks");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
@@ -190,7 +220,7 @@ namespace Siren.MobileAppService.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Siren.MobileAppService.Models.Identity.User")
+                    b.HasOne("Siren.Contracts.Models.Identity.User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -198,7 +228,7 @@ namespace Siren.MobileAppService.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Siren.MobileAppService.Models.Identity.User")
+                    b.HasOne("Siren.Contracts.Models.Identity.User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -211,7 +241,7 @@ namespace Siren.MobileAppService.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Siren.MobileAppService.Models.Identity.User")
+                    b.HasOne("Siren.Contracts.Models.Identity.User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -219,10 +249,17 @@ namespace Siren.MobileAppService.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Siren.MobileAppService.Models.Identity.User")
+                    b.HasOne("Siren.Contracts.Models.Identity.User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Siren.Contracts.Models.Profile.ProfilePhoto", b =>
+                {
+                    b.HasOne("Siren.Contracts.Models.Identity.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,3 +1,6 @@
+using Syncfusion.SfRangeSlider.XForms.iOS;
+using Syncfusion.XForms.iOS.ProgressBar;
+using Syncfusion.XForms.iOS.Core;
 using Syncfusion.SfMaps.XForms.iOS;
 using Syncfusion.XForms.iOS.Cards;
 using Syncfusion.XForms.iOS.Graphics;
@@ -31,6 +34,9 @@ namespace Siren.iOS
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
 global::Xamarin.Forms.Forms.Init();
+SfRangeSliderRenderer.Init();
+SfLinearProgressBarRenderer.Init();
+            Core.Init();
 SfSwitchRenderer.Init();
 SfMapsRenderer.Init();
             SfCardViewRenderer.Init();

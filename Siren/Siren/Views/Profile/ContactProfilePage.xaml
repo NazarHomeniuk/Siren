@@ -6,7 +6,6 @@
     xmlns:border="clr-namespace:Syncfusion.XForms.Border;assembly=Syncfusion.Core.XForms"
     xmlns:button="clr-namespace:Syncfusion.XForms.Buttons;assembly=Syncfusion.Buttons.XForms"
     xmlns:helper="clr-namespace:Siren.Helpers"
-    xmlns:viewModel="clr-namespace:Siren.ViewModels.Profile"
     Title="Contact Profile Page"
     NavigationPage.HasNavigationBar="False">
 
@@ -17,11 +16,6 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </ContentPage.Resources>
-
-    <!--  Binding context for Chat Profile Page  -->
-    <ContentPage.BindingContext>
-        <viewModel:ContactProfileViewModel />
-    </ContentPage.BindingContext>
 
     <ContentPage.Content>
         <ScrollView>
@@ -36,13 +30,17 @@
                     </Grid.ColumnDefinitions>
 
                     <Image
-                        x:Name="ProfileImage"
                         Grid.Row="0"
                         Grid.ColumnSpan="3"
                         Aspect="AspectFill"
                         BackgroundColor="{DynamicResource Gray-200}"
                         HeightRequest="{OnIdiom Default=480,
-                                                Phone=330}" />
+                                                Phone=330}">
+                        <Image.Source>
+                            <UriImageSource Uri="{Binding ProfileInfo.ImagePath}" 
+                                            CachingEnabled="false"/>
+                        </Image.Source>
+                    </Image>
 
                     <!--  Edit  -->
                     <button:SfButton
@@ -112,10 +110,10 @@
                                     LineHeight="{OnPlatform Android=1.5,
                                                             Default=-1}"
                                     x:Name="ProfileName"
-                                    Text="Julia Grant"
+                                    Text="{Binding ProfileInfo.Name}"
                                     TextColor="{DynamicResource Gray-900}"
                                     VerticalOptions="Center"
-                                    VerticalTextAlignment="Center" />
+                                    VerticalTextAlignment="Center"/>
 
                                 <!--  Status  -->
                                 <Label
@@ -164,7 +162,7 @@
                         FontFamily="{StaticResource Montserrat-Medium}"
                         Style="{StaticResource CommonProfileLabelStyle}"
                         x:Name="EmailLabel"
-                        Text="juliagrant@mail.com" />
+                        Text="{Binding ProfileInfo.Email}" />
 
                 </Grid>
 

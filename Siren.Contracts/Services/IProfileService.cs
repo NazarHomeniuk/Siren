@@ -6,5 +6,6 @@ namespace Siren.Contracts.Services
     public interface IProfileService
     {
         Task<CurrentUserProfileInfo> GetCurrentUserInfo();
+        Task<bool> UpdateUserPhoto(byte[] image);
     }
 }

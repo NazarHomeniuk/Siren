@@ -1,3 +1,5 @@
+using Syncfusion.SfRangeSlider.XForms.UWP;
+using Syncfusion.XForms.UWP.ProgressBar;
 using Syncfusion.XForms.UWP.Border;
 using Syncfusion.SfMaps.XForms.UWP;
 using System.Reflection;
@@ -56,6 +58,8 @@ namespace Siren.UWP
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
 List<Assembly> assembliesToInclude = new List<Assembly>();
+assembliesToInclude.Add(typeof(SfRangeSliderRenderer).GetTypeInfo().Assembly);
+assembliesToInclude.Add(typeof(SfLinearProgressRenderer).GetTypeInfo().Assembly);
 assembliesToInclude.Add(typeof(SfBorderRenderer).GetTypeInfo().Assembly);
 assembliesToInclude.Add(typeof(SfMapsRenderer).GetTypeInfo().Assembly);
 Xamarin.Forms.Forms.Init(e, assembliesToInclude);

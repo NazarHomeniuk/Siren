@@ -14,7 +14,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Siren.Contracts.Models.Identity;
 using Siren.MobileAppService.Configuration;
+using Siren.MobileAppService.Interfaces.Repositories;
+using Siren.MobileAppService.Interfaces.Services;
 using Siren.MobileAppService.Models;
+using Siren.MobileAppService.Repositories;
+using Siren.MobileAppService.Services;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Siren.MobileAppService
@@ -33,6 +37,11 @@ namespace Siren.MobileAppService
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.Configure<IdentityConfig>(Configuration.GetSection("Authentication"));
+
+            services.AddScoped<IProfilePhotoRepository, ProfilePhotoRepository>();
+            services.AddScoped<ITrackRepository, TrackRepository>();
+            services.AddScoped<IProfileService, ProfileService>();
+            services.AddScoped<ITrackService, TrackService>();
 
             var connectionString = Configuration["ConnectionString:Siren"];
             services.AddDbContext<DataContext>(opts => opts.UseSqlServer(connectionString));

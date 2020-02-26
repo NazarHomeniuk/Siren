@@ -11,6 +11,7 @@ namespace Siren
             Bind<IHttpService>().To<HttpService>();
             Bind<IAuthorizationService>().To<AuthorizationService>();
             Bind<IProfileService>().To<ProfileService>();
+            Bind<IAudioService>().To<AudioService>();
         }
     }
 }

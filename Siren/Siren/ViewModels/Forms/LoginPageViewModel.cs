@@ -1,4 +1,6 @@
 ﻿using System.Threading.Tasks;
+using MediaManager;
+using Plugin.Media;
 using Siren.Contracts.Models.Authorization;
 using Siren.Contracts.Services;
 using Siren.Views.Forms;
@@ -133,6 +135,7 @@ namespace Siren.ViewModels.Forms
             label.BackgroundColor = Color.FromHex("#70FFFFFF");
             await Task.Delay(100);
             label.BackgroundColor = Color.Transparent;
+            await CrossMediaManager.Current.Play(App.ApiUrl + "Audio");
         }
 
         /// <summary>

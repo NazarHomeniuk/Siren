@@ -63,6 +63,7 @@
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="Renderers\BorderlessEntryRenderer.cs" />
+    <Compile Include="Renderers\FrameShadowRenderer.cs" />
     <None Include="Entitlements.plist" />
     <None Include="Info.plist" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -158,6 +159,9 @@
       <Version>17.3.0.14</Version>
     </PackageReference>
     <PackageReference Include="Syncfusion.Xamarin.SfMaps">
+      <Version>17.3.0.14</Version>
+    </PackageReference>
+    <PackageReference Include="Syncfusion.Xamarin.SfProgressBar">
       <Version>17.3.0.14</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Forms" Version="4.1.0.555618" />

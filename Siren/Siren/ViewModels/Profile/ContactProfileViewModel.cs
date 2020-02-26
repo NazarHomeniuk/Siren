@@ -1,8 +1,13 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Siren.Models.Profile;
+using Plugin.Media;
+using Plugin.Media.Abstractions;
+using Siren.Contracts.Services;
+using Siren.Models;
+using Siren.Views.Profile;
 using Syncfusion.XForms.Border;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
@@ -15,9 +20,12 @@ namespace Siren.ViewModels.Profile
     [Preserve(AllMembers = true)]
     public class ContactProfileViewModel : INotifyPropertyChanged
     {
+        private readonly IProfileService profileService;
+        private readonly ContactProfilePage page;
+
         #region Field
 
-        private ObservableCollection<ContactProfile> profileInfo;
+        private ContactProfile profileInfo;
 
         #endregion
 
@@ -26,19 +34,16 @@ namespace Siren.ViewModels.Profile
         /// <summary>
         /// Initializes a new instance for the <see cref="ContactProfileViewModel" /> class.
         /// </summary>
-        public ContactProfileViewModel()
+        public ContactProfileViewModel(IProfileService profileService, ContactProfilePage page)
         {
-            this.ProfileInfo = new ObservableCollection<ContactProfile>();
-
-            for (var i = 0; i < 6; i++)
-            {
-                this.ProfileInfo.Add(new ContactProfile { ImagePath = App.BaseImageUrl + "ProfileImage1" + i + ".png" });
-            }
-
+            this.profileService = profileService;
+            this.page = page;
+            this.ProfileInfo = new ContactProfile();
             this.ProfileNameCommand = new Command(this.ProfileNameClicked);
             this.EditCommand = new Command(this.EditButtonClicked);
             this.ViewAllCommand = new Command(this.ViewAllButtonClicked);
             this.MediaImageCommand = new Command(this.MediaImageClicked);
+            Task.Run(async () => { await UpdateProfileInformation(); }).Wait();
         }
 
         #endregion
@@ -56,7 +61,7 @@ namespace Siren.ViewModels.Profile
         /// <summary>
         /// Gets or sets a collection of profile info.
         /// </summary>
-        public ObservableCollection<ContactProfile> ProfileInfo
+        public ContactProfile ProfileInfo
         {
             get
             {
@@ -125,9 +130,40 @@ namespace Siren.ViewModels.Profile
         /// Invoked when the edit button is clicked.
         /// </summary>
         /// <param name="obj">The object</param>
-        private void EditButtonClicked(object obj)
+        private async void EditButtonClicked(object obj)
         {
-            // Do something
+            await CrossMedia.Current.Initialize();
+            var mediaOptions = new PickMediaOptions
+            {
+                PhotoSize = PhotoSize.Large
+            };
+
+            var selectedImageFile = await CrossMedia.Current.PickPhotoAsync(mediaOptions);
+            if (selectedImageFile == null)
+            {
+                return;
+            }
+
+            byte[] array;
+            using (var stream = new MemoryStream())
+            {
+                await selectedImageFile.GetStream().CopyToAsync(stream);
+                array = stream.ToArray();
+            }
+
+            var result = await profileService.UpdateUserPhoto(array);
+            if (result)
+            {
+                await UpdateProfileInformation();
+            }
+        }
+
+        public async Task UpdateProfileInformation()
+        {
+            var currentUser = await profileService.GetCurrentUserInfo();
+            ProfileInfo.Name = currentUser.UserName;
+            ProfileInfo.Email = currentUser.Email;
+            ProfileInfo.ImagePath = currentUser.ImagePath;
         }
 
         /// <summary>

@@ -33,10 +33,24 @@
                              Size="16"/>
         </chat:RecentChatPage.IconImageSource>
     </chat:RecentChatPage>
+    <local:PlayerPage Title="Music">
+        <local:PlayerPage.IconImageSource>
+            <FontImageSource FontFamily="{StaticResource FontIcons}"
+                             Glyph="{StaticResource AlbumsIcon}"
+                             Size="16"/>
+        </local:PlayerPage.IconImageSource>
+    </local:PlayerPage>
+    <local:SuggestionPage Title="People">
+        <local:SuggestionPage.IconImageSource>
+            <FontImageSource FontFamily="{StaticResource FontIcons}"
+                             Glyph="{StaticResource Search}"
+                             Size="16"/>
+        </local:SuggestionPage.IconImageSource>
+    </local:SuggestionPage>
     <map:MapPage Title="Map">
         <map:MapPage.IconImageSource>
             <FontImageSource FontFamily="{StaticResource FontIcons}"
-                                 Glyph="{StaticResource Search}"
+                                 Glyph="{StaticResource MoreIcon}"
                                  Size="16"/>
         </map:MapPage.IconImageSource>
     </map:MapPage>

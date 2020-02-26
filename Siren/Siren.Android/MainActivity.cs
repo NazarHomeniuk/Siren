@@ -2,6 +2,7 @@
 using Android.Content.PM;
 using Android.Runtime;
 using Android.OS;
+using MediaManager;
 using Ninject;
 
 namespace Siren.Droid
@@ -22,10 +23,12 @@ namespace Siren.Droid
             Xamarin.FormsMaps.Init(this, savedInstanceState);
             kernel.Get<AppContextWrapper>().UseContext(this);
             LoadApplication(kernel.Get<App>());
+            CrossMediaManager.Current.Init();
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            Plugin.Permissions.PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }

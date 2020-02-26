@@ -14,9 +14,9 @@ namespace Siren
         //To debug on Android emulators run the web backend against .NET Core not IIS
         //If using other emulators besides stock Google images you may need to adjust the IP address
         public static string AzureBackendUrl =
-            DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:5000" : "http://localhost:5000";
+            DeviceInfo.Platform == DevicePlatform.Android ? "http://10.0.2.2:40001" : "http://localhost:40001";
 
-        public static string ApiUrl = "http://10.0.2.2:50075/api/";
+        public static string ApiUrl = "http://10.0.2.2:40001/api/";
         public static bool UseMockDataStore = true;
         public static bool IsUserLoggedId { get; set; }
         public static string Token { get; set; }

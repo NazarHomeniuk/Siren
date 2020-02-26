@@ -18,19 +18,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Plugin.MediaManager" Version="0.9.6" />
     <PackageReference Include="Portable.Ninject" Version="3.3.1" />
-    <PackageReference Include="Syncfusion.Xamarin.Buttons" Version="17.3.0.14" />
-    <PackageReference Include="Syncfusion.Xamarin.Cards" Version="17.3.0.14" />
-    <PackageReference Include="Syncfusion.Xamarin.Core" Version="17.3.0.14" />
-    <PackageReference Include="Syncfusion.Xamarin.DataSource" Version="17.3.0.14" />
-    <PackageReference Include="Syncfusion.Xamarin.SfBadgeView" Version="17.3.0.14" />
-    <PackageReference Include="Syncfusion.Xamarin.SfComboBox" Version="17.3.0.14" />
-    <PackageReference Include="Syncfusion.Xamarin.SfListView" Version="17.3.0.14" />
-    <PackageReference Include="Syncfusion.Xamarin.SfMaps" Version="17.3.0.14" />
-    <PackageReference Include="Xamarin.Forms" Version="4.2.0.848062" />  
-    <PackageReference Include="Xamarin.Essentials" Version="1.3.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="Xamarin.Forms.Maps" Version="4.2.0.848062" />
+    <PackageReference Include="Syncfusion.Xamarin.Buttons" Version="17.4.0.51" />
+    <PackageReference Include="Syncfusion.Xamarin.Cards" Version="17.4.0.51" />
+    <PackageReference Include="Syncfusion.Xamarin.Core" Version="17.4.0.51" />
+    <PackageReference Include="Syncfusion.Xamarin.DataSource" Version="17.4.0.51" />
+    <PackageReference Include="Syncfusion.Xamarin.SfBadgeView" Version="17.4.0.51" />
+    <PackageReference Include="Syncfusion.Xamarin.SfComboBox" Version="17.4.0.51" />
+    <PackageReference Include="Syncfusion.Xamarin.SfListView" Version="17.4.0.51" />
+    <PackageReference Include="Syncfusion.Xamarin.SfMaps" Version="17.4.0.51" />
+    <PackageReference Include="Syncfusion.Xamarin.SfProgressBar" Version="17.4.0.51" />
+    <PackageReference Include="Syncfusion.Xamarin.SfRangeSlider" Version="17.4.0.51" />
+    <PackageReference Include="Xam.Plugin.Media" Version="4.0.1.5" />
+    <PackageReference Include="Xamarin.Forms" Version="4.4.0.991640" />  
+    <PackageReference Include="Xamarin.Essentials" Version="1.4.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Xamarin.Forms.Maps" Version="4.4.0.991640" />
   </ItemGroup>
 
   <ItemGroup>
@@ -79,10 +83,19 @@
     <EmbeddedResource Update="Views\Navigation\BottomNavigationPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Update="Views\Navigation\PlayerPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="Views\Navigation\SettingsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Update="Views\Navigation\SongsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="Views\Navigation\Styles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Navigation\SuggestionPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Views\Profile\ContactProfilePage.xaml">
@@ -91,9 +104,19 @@
     <EmbeddedResource Update="Views\Profile\Styles.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Update="Views\Social\SocialProfileWithInterestsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Social\Styles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\Social\Templates\ProfileTemplate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Renderers\" />
     <Folder Include="ViewModels\Map\" />
   </ItemGroup>
 

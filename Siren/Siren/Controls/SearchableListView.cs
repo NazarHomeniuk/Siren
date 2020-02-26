@@ -96,7 +96,7 @@ namespace Siren.Controls
         /// </summary>
         /// <param name="obj">The list view item</param>
         /// <returns>Returns the filtered item</returns>
-        private bool FilterContacts(object obj)
+        public bool FilterContacts(object obj)
         {
             var taskInfo = obj as ChatDetail;
             var message = taskInfo.Message;
