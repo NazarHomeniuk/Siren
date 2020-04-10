@@ -14,11 +14,13 @@ namespace Siren.MobileAppService.Controllers
     {
         private readonly UserManager<User> userManager;
         private readonly IProfileService profileService;
-        
-        public ProfileController(UserManager<User> userManager, IProfileService profileService)
+        private readonly ITrackService trackService;
+
+        public ProfileController(UserManager<User> userManager, IProfileService profileService, ITrackService trackService)
         {
             this.userManager = userManager;
             this.profileService = profileService;
+            this.trackService = trackService;
         }
 
         [Authorize]
@@ -27,12 +29,19 @@ namespace Siren.MobileAppService.Controllers
         public async Task<IActionResult> GetCurrentUser()
         {
             var user = await userManager.GetUserAsync(User);
-            var currentUserProfileInfo = new CurrentUserProfileInfo
+            var currentUserProfileInfo = new UserProfileInfo
             {
                 Email = user.Email,
                 ImagePath = "http://10.0.2.2:40001/api/profile/getuserphoto?id=" + user.Id,
-                UserName = user.UserName
+                UserName = user.UserName,
             };
+
+            if (user.TrackId.HasValue)
+            {
+                var track = await trackService.Get(user.TrackId.Value);
+                currentUserProfileInfo.TrackArtist = track.Artist;
+                currentUserProfileInfo.TrackTitle = track.Title;
+            }
 
             return Ok(currentUserProfileInfo);
         }

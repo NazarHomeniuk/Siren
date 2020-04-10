@@ -12,6 +12,8 @@ namespace Siren
             Bind<IAuthorizationService>().To<AuthorizationService>();
             Bind<IProfileService>().To<ProfileService>();
             Bind<IAudioService>().To<AudioService>();
+            Bind<IUserService>().To<UserService>();
+            Bind<PlayerService>().ToSelf().InSingletonScope();
         }
     }
 }

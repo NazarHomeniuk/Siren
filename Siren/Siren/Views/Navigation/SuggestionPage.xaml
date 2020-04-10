@@ -4,7 +4,6 @@
              xmlns:controls="clr-namespace:Siren.Controls"
              xmlns:buttons="clr-namespace:Syncfusion.XForms.Buttons;assembly=Syncfusion.Buttons.XForms"
              xmlns:border="clr-namespace:Syncfusion.XForms.Border;assembly=Syncfusion.Core.XForms"
-             xmlns:viewmodel="clr-namespace:Siren.ViewModels.Navigation"               
              x:Class="Siren.Views.Navigation.SuggestionPage"
              BackgroundColor="{DynamicResource Gray-White}"
              NavigationPage.HasNavigationBar="False" >
@@ -16,11 +15,6 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </ContentPage.Resources>
-
-    <!--  Binding Context for Suggestion Page  -->
-    <ContentPage.BindingContext>
-        <viewmodel:SuggestionViewModel/>
-    </ContentPage.BindingContext>
 
     <ContentPage.Content>
 
@@ -99,12 +93,12 @@
 
             </StackLayout>
 
-            <StackLayout Grid.Row="1"  Spacing="0" >
+            <StackLayout Grid.Row="1" VerticalOptions="FillAndExpand">
                 
                 <BoxView Style="{StaticResource SeparatorStyle}" />
 
                 <controls:SearchableSuggestionList x:Name="Suggestions"
-                    AutoFitMode="Height"
+                                                   AutoFitMode="Height"
                     BackgroundColor="{DynamicResource Gray-White}"
                     IsScrollBarVisible="False"
                     ItemsSource="{Binding SuggestionList}"
@@ -143,21 +137,7 @@
                                                     Style="{StaticResource LabelStyle}"
                                                     Text="{Binding SuggestionName}"
                                                     FontSize="16" TextColor="{DynamicResource Gray-900}"/>
-
-                                            <!--  Suggestion Id  -->
-                                            <Label Grid.Row="1" FontFamily="{StaticResource Montserrat-Medium}"
-                                                FontSize="14" TextColor="{DynamicResource Gray-700}"
-                                                Style="{StaticResource LabelStyle}"  
-                                                Text="{Binding Id }"/>
-                                         
                                         </StackLayout>
-
-                                        <!--  Suggestion button  -->
-                                        <buttons:SfButton Grid.Column="2"  Margin="0,20" 
-                                            Command="{Binding Path=BindingContext.SuggestionCommand, Source={x:Reference Suggestions}}" 
-                                            Style="{StaticResource SfButtonStyle}" CornerRadius="24"
-                                            Text="FOLLOW" />
-
                                     </Grid>
                                     <BoxView Style="{StaticResource SeparatorStyle}" />
                                 </StackLayout>

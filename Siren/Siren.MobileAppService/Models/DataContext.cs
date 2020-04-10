@@ -9,6 +9,8 @@ namespace Siren.MobileAppService.Models
     {
         public DbSet<ProfilePhoto> ProfilePhotos { get; set; }
         public DbSet<Track> Tracks { get; set; }
+        public DbSet<UserFollower> UserFollowers { get; set; }
+        public DbSet<UserTrack> UserTracks { get; set; }
 
         public DataContext(DbContextOptions options) : base(options)
         {

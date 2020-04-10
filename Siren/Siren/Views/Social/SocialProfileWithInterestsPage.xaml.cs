@@ -1,4 +1,7 @@
-﻿using Xamarin.Forms;
+﻿using Ninject;
+using Siren.Contracts.Services;
+using Siren.ViewModels.Social;
+using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
@@ -14,9 +17,12 @@ namespace Siren.Views.Social
         /// <summary>
         /// Initializes a new instance of the <see cref="SocialProfileWithInterestsPage" /> class.
         /// </summary>
-        public SocialProfileWithInterestsPage()
+        public SocialProfileWithInterestsPage(string userId)
         {
             InitializeComponent();
+            var userService = App.Kernel.Get<IUserService>();
+            var viewModel = new SocialProfileViewModel(userId, userService, this);
+            BindingContext = viewModel;
         }
     }
 }

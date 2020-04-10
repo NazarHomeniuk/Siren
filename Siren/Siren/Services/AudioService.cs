@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MediaManager;
 using MediaManager.Library;
 using Newtonsoft.Json;
+using Siren.Contracts.Models.Profile;
 using Siren.Contracts.Services;
 
 namespace Siren.Services
@@ -17,18 +17,23 @@ namespace Siren.Services
             this.httpService = httpService;
         }
 
-        public async Task<IMediaItem> PlayAll()
+        public async Task<IEnumerable<int>> GetAllTrackIds()
         {
             var response = await httpService.GetAsync("Audio/GetAllIds", App.Token);
             var ids = JsonConvert.DeserializeObject<IEnumerable<int>>(await response.Content.ReadAsStringAsync());
-            var audioList = ids.Select(i => App.ApiUrl + $"Audio/GetTrack?id={i}");
-            var track = await CrossMediaManager.Current.Play(audioList);
-            return track;
+            return ids;
+        }
+
+        public async Task<IEnumerable<Track>> GetAllTracks()
+        {
+            var response = await httpService.GetAsync("Audio/GetAll", App.Token);
+            var tracks = JsonConvert.DeserializeObject<IEnumerable<Track>>(await response.Content.ReadAsStringAsync());
+            return tracks;
         }
 
         public async Task<IMediaItem> Play(int trackId)
         {
-            var track = await CrossMediaManager.Current.Play(App.ApiUrl + $"Audio/GetTrack?id={trackId}");
+            var track = await CrossMediaManager.Current.Play(App.ApiUrl + $"Audio/PlayTrack?id={trackId}");
             return track;
         }
 

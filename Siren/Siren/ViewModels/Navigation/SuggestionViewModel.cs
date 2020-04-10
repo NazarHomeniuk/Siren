@@ -1,8 +1,17 @@
 ﻿using Siren.Models.Navigation;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using Siren.Annotations;
+using Siren.Contracts.Services;
+using Siren.ViewModels.Social;
+using Siren.Views.Navigation;
+using Siren.Views.Social;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
+using ItemTappedEventArgs = Syncfusion.ListView.XForms.ItemTappedEventArgs;
 
 namespace Siren.ViewModels.Navigation
 {
@@ -11,18 +20,43 @@ namespace Siren.ViewModels.Navigation
     /// </summary>
     [Preserve(AllMembers = true)]
     [DataContract]
-    public class SuggestionViewModel
+    public class SuggestionViewModel : INotifyPropertyChanged
     {
+        private readonly SuggestionPage page;
+        private readonly IUserService userService;
+
         #region Fields
 
         private Command<object> itemTappedCommand;
 
         private Command suggestionCommand;
 
+        private ObservableCollection<Suggestion> suggestionList;
+
+        private string searchText;
+
         #endregion
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public SuggestionViewModel(IUserService userService, SuggestionPage page)
+        {
+            this.userService = userService;
+            this.page = page;
+            InitPeople();
+        }
 
         #region Properties
 
+        public string SearchText
+        {
+            get => searchText;
+            set
+            {
+                searchText = value;
+                OnPropertyChanged();
+            }
+        }
         /// <summary>
         /// Gets the command that will be executed when an item is selected.
         /// </summary>
@@ -38,7 +72,15 @@ namespace Siren.ViewModels.Navigation
         /// Gets or sets a collection of values to be displayed in the suggestion page.
         /// </summary>
         [DataMember(Name = "suggestionList")]
-        public ObservableCollection<Suggestion> SuggestionList { get; set; }
+        public ObservableCollection<Suggestion> SuggestionList
+        {
+            get => suggestionList;
+            set
+            {
+                suggestionList = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// Gets or sets the command that will be executed when an item is selected.
@@ -53,15 +95,24 @@ namespace Siren.ViewModels.Navigation
 
         #endregion
 
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         #region Methods
 
         /// <summary>
         /// Invoked when an item is selected from the suggestion page.
         /// </summary>
         /// <param name="selectedItem">Selected item from the list view.</param>
-        private void NavigateToNextPage(object selectedItem)
+        private async void NavigateToNextPage(object selectedItem)
         {
-            // Do something
+            var item = selectedItem as ItemTappedEventArgs;
+            var suggestion = item?.ItemData as Suggestion;
+            var profilePage = new SocialProfileWithInterestsPage(suggestion.Id);
+            await page.Navigation.PushAsync(profilePage);
         }
 
         /// <summary>
@@ -73,7 +124,17 @@ namespace Siren.ViewModels.Navigation
             //Do something
         }
 
-        #endregion
+        private async void InitPeople()
+        {
+            var suggestions = await userService.GetUserSuggestions();
+            SuggestionList = new ObservableCollection<Suggestion>(suggestions.Select(s => new Suggestion
+            {
+                Id = s.UserId,
+                ImagePath = s.UserImage,
+                SuggestionName = s.UserName
+            }));
+        }
 
+        #endregion
     }
 }

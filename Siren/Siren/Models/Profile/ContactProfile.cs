@@ -8,6 +8,9 @@ namespace Siren.Models
     public class ContactProfile : INotifyPropertyChanged
     {
         private string imagePath;
+        private string status;
+        private string name;
+        private string email;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -26,8 +29,35 @@ namespace Siren.Models
             }
         }
 
-        public string Name { get; set; }
-        public string Email { get; set; }
+        public string Status
+        {
+            get => status;
+            set
+            {
+                status = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public string Name
+        {
+            get => name;
+            set
+            {
+                name = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public string Email
+        {
+            get => email;
+            set
+            {
+                email = value;
+                NotifyPropertyChanged();
+            }
+        }
 
         #endregion
 

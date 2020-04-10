@@ -1,13 +1,18 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Plugin.Media;
 using Plugin.Media.Abstractions;
+using Siren.Contracts.Models.Profile;
 using Siren.Contracts.Services;
 using Siren.Models;
+using Siren.Services;
 using Siren.Views.Profile;
+using Syncfusion.ListView.XForms;
 using Syncfusion.XForms.Border;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
@@ -20,11 +25,15 @@ namespace Siren.ViewModels.Profile
     [Preserve(AllMembers = true)]
     public class ContactProfileViewModel : INotifyPropertyChanged
     {
+        private readonly IUserService userService;
         private readonly IProfileService profileService;
+        private readonly IAudioService audioService;
+        private readonly PlayerService playerService;
         private readonly ContactProfilePage page;
 
         #region Field
 
+        private List<Track> tracks;
         private ContactProfile profileInfo;
 
         #endregion
@@ -34,16 +43,21 @@ namespace Siren.ViewModels.Profile
         /// <summary>
         /// Initializes a new instance for the <see cref="ContactProfileViewModel" /> class.
         /// </summary>
-        public ContactProfileViewModel(IProfileService profileService, ContactProfilePage page)
+        public ContactProfileViewModel(IUserService userService, IProfileService profileService,
+            IAudioService audioService, PlayerService playerService, ContactProfilePage page)
         {
+            page.Appearing += PageOnAppearing;
+            this.userService = userService;
             this.profileService = profileService;
+            this.audioService = audioService;
+            this.playerService = playerService;
             this.page = page;
-            this.ProfileInfo = new ContactProfile();
-            this.ProfileNameCommand = new Command(this.ProfileNameClicked);
-            this.EditCommand = new Command(this.EditButtonClicked);
-            this.ViewAllCommand = new Command(this.ViewAllButtonClicked);
-            this.MediaImageCommand = new Command(this.MediaImageClicked);
-            Task.Run(async () => { await UpdateProfileInformation(); }).Wait();
+            ProfileInfo = new ContactProfile();
+            ProfileNameCommand = new Command(ProfileNameClicked);
+            EditCommand = new Command(EditButtonClicked);
+            ViewAllCommand = new Command(ViewAllButtonClicked);
+            SelectionChangedCommand = new Command(SelectionChanged);
+            RemoveTrackCommand = new Command(RemoveTrackClicked);
         }
 
         #endregion
@@ -58,6 +72,16 @@ namespace Siren.ViewModels.Profile
 
         #region Public Property
 
+        public List<Track> Tracks
+        {
+            get => tracks;
+            set
+            {
+                tracks = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         /// <summary>
         /// Gets or sets a collection of profile info.
         /// </summary>
@@ -65,19 +89,21 @@ namespace Siren.ViewModels.Profile
         {
             get
             {
-                return this.profileInfo;
+                return profileInfo;
             }
 
             set
             {
-                this.profileInfo = value;
-                this.NotifyPropertyChanged();
+                profileInfo = value;
+                NotifyPropertyChanged();
             }
         }
 
         #endregion
 
         #region Command
+
+        public Command RemoveTrackCommand { get; set; }
 
         /// <summary>
         /// Gets or sets the command that is executed when the profile name is clicked.
@@ -97,7 +123,7 @@ namespace Siren.ViewModels.Profile
         /// <summary>
         /// Gets or sets the command that is executed when the media image is clicked.
         /// </summary>
-        public Command MediaImageCommand { get; set; }
+        public Command SelectionChangedCommand { get; set; }
 
         #endregion
 
@@ -109,7 +135,7 @@ namespace Siren.ViewModels.Profile
         /// <param name="propertyName">Property name</param>
         public void NotifyPropertyChanged([CallerMemberName]string propertyName = null)
         {
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary>
@@ -160,10 +186,22 @@ namespace Siren.ViewModels.Profile
 
         public async Task UpdateProfileInformation()
         {
+            Tracks = (await userService.GetCurrentUserTracks()).ToList();
             var currentUser = await profileService.GetCurrentUserInfo();
             ProfileInfo.Name = currentUser.UserName;
             ProfileInfo.Email = currentUser.Email;
             ProfileInfo.ImagePath = currentUser.ImagePath;
+            if (!string.IsNullOrEmpty(currentUser.TrackArtist + currentUser.TrackTitle))
+            {
+                ProfileInfo.Status = $"{currentUser.TrackArtist} - {currentUser.TrackTitle}";
+            }
+        }
+
+        private async void RemoveTrackClicked(object obj)
+        {
+            var trackId = (int) obj;
+            await userService.RemoveTrack(trackId);
+            await UpdateProfileInformation();
         }
 
         /// <summary>
@@ -175,12 +213,17 @@ namespace Siren.ViewModels.Profile
             // Do something
         }
 
-        /// <summary>
-        /// Invoked when the media image is clicked.
-        /// </summary>
-        private void MediaImageClicked(object obj)
+        private async void SelectionChanged(object obj)
         {
-            // Do something
+            if (obj is ItemSelectionChangedEventArgs args)
+            {
+                if (args.AddedItems.First() is Track track) await playerService.Play(track.Id);
+            }
+        }
+
+        private async void PageOnAppearing(object sender, EventArgs e)
+        {
+            await UpdateProfileInformation();
         }
 
         #endregion

@@ -1,5 +1,8 @@
 ﻿using System;
-using Siren.DataService;
+using Ninject;
+using Siren.Contracts.Services;
+using Siren.Services;
+using Siren.ViewModels.Navigation;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
@@ -19,7 +22,10 @@ namespace Siren.Views.Navigation
         public SongsPage()
         {
             InitializeComponent();
-            this.BindingContext = SongsDataService.Instance.SongsViewModel;
+            var playerService = App.Kernel.Get<PlayerService>();
+            var audioService = App.Kernel.Get<IAudioService>();
+            var userService = App.Kernel.Get<IUserService>();
+            this.BindingContext = new SongsViewModel(this, playerService, audioService, userService);
         }
 
         /// <summary>

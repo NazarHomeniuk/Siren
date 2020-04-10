@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Siren.Contracts.Models.Identity;
 using Siren.MobileAppService.Interfaces.Services;
 
 namespace Siren.MobileAppService.Controllers
@@ -10,11 +12,20 @@ namespace Siren.MobileAppService.Controllers
     [ApiController]
     public class AudioController : ControllerBase
     {
+        private readonly UserManager<User> userManager;
         private readonly ITrackService trackService;
 
-        public AudioController(ITrackService trackService)
+        public AudioController(UserManager<User> userManager, ITrackService trackService)
         {
+            this.userManager = userManager;
             this.trackService = trackService;
+        }
+
+        [Authorize]
+        [HttpGet("getAll")]
+        public IActionResult GetAll()
+        {
+            return Ok(trackService.GetAll());
         }
 
         [Authorize]
@@ -24,10 +35,11 @@ namespace Siren.MobileAppService.Controllers
             return Ok(trackService.GetAllIds());
         }
 
-        [HttpGet("getTrack")]
-        public async Task<IActionResult> GetTrack(int id)
+        [HttpGet("playTrack")]
+        public async Task<IActionResult> PlayTrack(int id)
         {
-            var track = await trackService.Get(id);
+            var user = await userManager.GetUserAsync(User);
+            var track = await trackService.Play(id, user);
             return File(track.Data, "audio/mpeg");
         }
 

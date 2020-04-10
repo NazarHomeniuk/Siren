@@ -12,6 +12,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200227111542_UpdatedUserTable.cs" />
+    <Compile Remove="Migrations\20200227111542_UpdatedUserTable.Designer.cs" />
+    <Compile Remove="Migrations\20200402105536_AddUserFollowersTable.cs" />
+    <Compile Remove="Migrations\20200402105536_AddUserFollowersTable.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.10" />
     <PackageReference Include="NETStandard.Library" Version="2.0.3" />
@@ -24,6 +31,7 @@
     <PackageReference Include="Syncfusion.Xamarin.SfComboBox" Version="17.3.0.14" />
     <PackageReference Include="Syncfusion.Xamarin.SfListView" Version="17.3.0.14" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+    <PackageReference Include="TagLibSharp" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>

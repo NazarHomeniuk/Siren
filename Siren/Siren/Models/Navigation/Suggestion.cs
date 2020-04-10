@@ -12,8 +12,6 @@ namespace Siren.Models.Navigation
     {
         #region Field
 
-        private string imagePath;
-
         #endregion
 
         #region Properties
@@ -22,18 +20,7 @@ namespace Siren.Models.Navigation
         /// Gets or sets the imagepath.
         /// </summary>
         [DataMember(Name = "imagePath")]
-        public string ImagePath
-        {
-            get
-            {
-                return App.BaseImageUrl + this.imagePath;
-            }
-
-            set
-            {
-                this.imagePath = value;
-            }
-        }
+        public string ImagePath { get; set; }
 
         /// <summary>
         /// Gets or sets the suggestion name.

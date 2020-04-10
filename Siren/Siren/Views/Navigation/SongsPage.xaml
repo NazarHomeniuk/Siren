@@ -7,6 +7,7 @@
              xmlns:listView="clr-namespace:Syncfusion.ListView.XForms;assembly=Syncfusion.SfListView.XForms"
              xmlns:buttons="clr-namespace:Syncfusion.XForms.Buttons;assembly=Syncfusion.Buttons.XForms"
              xmlns:border="clr-namespace:Syncfusion.XForms.Border;assembly=Syncfusion.Core.XForms"
+             xmlns:graphics="clr-namespace:Syncfusion.XForms.Graphics;assembly=Syncfusion.Core.XForms"
              mc:Ignorable="d"
              x:Class="Siren.Views.Navigation.SongsPage"
              BackgroundColor="{DynamicResource Gray-White}"
@@ -108,6 +109,9 @@
             <StackLayout Grid.Row="2" Spacing="0">
 
                 <listView:SfListView
+                    x:Name="ListView"
+                    AllowSwiping="True"
+                    SwipeOffset="125"
                     IsScrollBarVisible="false"
                     ItemSpacing="0"
                     ItemsSource="{Binding SongsPageList}"
@@ -174,6 +178,49 @@
                             </ViewCell>
                         </DataTemplate>
                     </listView:SfListView.ItemTemplate>
+                    <listView:SfListView.RightSwipeTemplate>
+                        <DataTemplate>
+                            <border:SfBorder
+                                BackgroundColor="{DynamicResource PrimaryColor}"
+                            BorderColor="{StaticResource Transparent}"
+                            BorderWidth="0"
+                                Margin="0,0,0,20"
+                                CornerRadius="30, 0, 0, 30">
+                                <Grid>
+                                    <graphics:SfGradientView Style="{StaticResource GradientViewStyle}" />
+
+                                    <Grid
+                                    Padding="15,0"
+                                    ColumnSpacing="14"
+                                    VerticalOptions="Center">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <buttons:SfButton Style="{StaticResource SwipeTemplateBorderStyle}"
+                                                          Command="{Binding Path=BindingContext.AddCommand, Source={x:Reference ListView}}"
+                                                          CommandParameter="{Binding Id}">
+                                            <buttons:SfButton.Content>
+                                                <Label Style="{StaticResource SwipeTemplateButtonStyle}" Text="{StaticResource Add}" />
+                                            </buttons:SfButton.Content>
+                                        </buttons:SfButton>
+
+                                        <buttons:SfButton
+                                        Grid.Column="1"
+                                        Style="{StaticResource SwipeTemplateBorderStyle}">
+                                            <Label Style="{StaticResource SwipeTemplateButtonStyle}" Text="{StaticResource ChatIcon}" />
+                                        </buttons:SfButton>
+
+                                    </Grid>
+                                </Grid>
+                            </border:SfBorder>
+                        </DataTemplate>
+                    </listView:SfListView.RightSwipeTemplate>
                 </listView:SfListView>
             </StackLayout>
         </Grid>

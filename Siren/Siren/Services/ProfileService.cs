@@ -15,11 +15,11 @@ namespace Siren.Services
             this.httpService = httpService;
         }
 
-        public async Task<CurrentUserProfileInfo> GetCurrentUserInfo()
+        public async Task<UserProfileInfo> GetCurrentUserInfo()
         {
             var result = await httpService.GetAsync("Profile/GetCurrentUser", App.Token);
             var userInfo =
-                JsonConvert.DeserializeObject<CurrentUserProfileInfo>(await result.Content.ReadAsStringAsync());
+                JsonConvert.DeserializeObject<UserProfileInfo>(await result.Content.ReadAsStringAsync());
             return userInfo;
         }
 

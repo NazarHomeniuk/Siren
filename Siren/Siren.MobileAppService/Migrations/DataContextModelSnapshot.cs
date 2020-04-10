@@ -162,6 +162,8 @@ namespace Siren.MobileAppService.Migrations
 
                     b.Property<string>("SecurityStamp");
 
+                    b.Property<int?>("TrackId");
+
                     b.Property<bool>("TwoFactorEnabled");
 
                     b.Property<string>("UserName")
@@ -176,6 +178,8 @@ namespace Siren.MobileAppService.Migrations
                         .IsUnique()
                         .HasName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("TrackId");
 
                     b.ToTable("AspNetUsers");
                 });
@@ -203,11 +207,53 @@ namespace Siren.MobileAppService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Artist");
+
                     b.Property<byte[]>("Data");
+
+                    b.Property<string>("Title");
 
                     b.HasKey("Id");
 
                     b.ToTable("Tracks");
+                });
+
+            modelBuilder.Entity("Siren.Contracts.Models.Profile.UserFollower", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("FollowingUserId");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FollowingUserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserFollowers");
+                });
+
+            modelBuilder.Entity("Siren.Contracts.Models.Profile.UserTrack", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("TrackId");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TrackId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserTracks");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -255,8 +301,38 @@ namespace Siren.MobileAppService.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("Siren.Contracts.Models.Identity.User", b =>
+                {
+                    b.HasOne("Siren.Contracts.Models.Profile.Track", "Track")
+                        .WithMany()
+                        .HasForeignKey("TrackId");
+                });
+
             modelBuilder.Entity("Siren.Contracts.Models.Profile.ProfilePhoto", b =>
                 {
+                    b.HasOne("Siren.Contracts.Models.Identity.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("Siren.Contracts.Models.Profile.UserFollower", b =>
+                {
+                    b.HasOne("Siren.Contracts.Models.Identity.User", "FollowingUser")
+                        .WithMany()
+                        .HasForeignKey("FollowingUserId");
+
+                    b.HasOne("Siren.Contracts.Models.Identity.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("Siren.Contracts.Models.Profile.UserTrack", b =>
+                {
+                    b.HasOne("Siren.Contracts.Models.Profile.Track", "Track")
+                        .WithMany()
+                        .HasForeignKey("TrackId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Siren.Contracts.Models.Identity.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");

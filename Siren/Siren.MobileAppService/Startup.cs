@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Siren.Contracts.Models.Identity;
 using Siren.MobileAppService.Configuration;
@@ -40,8 +38,12 @@ namespace Siren.MobileAppService
 
             services.AddScoped<IProfilePhotoRepository, ProfilePhotoRepository>();
             services.AddScoped<ITrackRepository, TrackRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserFollowerRepository, UserFollowerRepository>();
+            services.AddScoped<IUserTrackRepository, UserTrackRepository>();
             services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<ITrackService, TrackService>();
+            services.AddScoped<IUserService, UserService>();
 
             var connectionString = Configuration["ConnectionString:Siren"];
             services.AddDbContext<DataContext>(opts => opts.UseSqlServer(connectionString));

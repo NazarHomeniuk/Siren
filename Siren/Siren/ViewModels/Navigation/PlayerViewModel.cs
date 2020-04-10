@@ -11,7 +11,8 @@ using MediaManager.Media;
 using MediaManager.Playback;
 using MediaManager.Player;
 using Siren.Annotations;
-using Siren.Contracts.Services;
+using Siren.Services;
+using Siren.Views.Navigation;
 using Syncfusion.SfRangeSlider.XForms;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
@@ -27,140 +28,132 @@ namespace Siren.ViewModels.Navigation
         private const string PauseImageSrc = "pause.png";
         private const string RepeatImageSrc = "repeat.png";
         private const string RepeatActiveImageSrc = "repeat_active.png";
+        private const string NoTrackImageSrc = "notrack.jpg";
 
-        private readonly IAudioService audioService;
-
-        private ImageSource image;
-        private ImageSource playImage;
-        private ImageSource repeatImage;
-        private string artist;
-        private string title;
-        private bool isLoaded;
-        private int position;
-        private int prevPosition;
-        private int duration;
-        private string positionTimeSpan;
-        private string durationTimeSpan;
-        private int volume;
+        private readonly PlayerService playerService;
+        private readonly Page page;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public PlayerViewModel(IAudioService audioService)
+        public PlayerViewModel(PlayerService playerService, Page page)
         {
-            this.audioService = audioService;
+            this.page = page;
+            this.playerService = playerService;
             PlayPauseCommand = new Command(PlayPauseClicked);
             NextCommand = new Command(NextClicked);
             PrevCommand = new Command(PrevClicked);
             RepeatCommand = new Command(RepeatClicked);
+            PlaylistCommand = new Command(PlaylistClicked);
             CrossMediaManager.Current.PositionChanged += PositionChanged;
             CrossMediaManager.Current.MediaItemChanged += MediaItemChanged;
             CrossMediaManager.Current.StateChanged += CurrentOnStateChanged;
+            CrossMediaManager.Current.RequestHeaders.Add("Authorization", $"Bearer {App.Token}");
             Volume = CrossMediaManager.Current.Volume.CurrentVolume;
             Artist = "Artist";
             Title = "Title";
             PositionTimeSpan = "00:00";
             DurationTimeSpan = "00:00";
-            Image = "notrack.jpg";
+            Image = NoTrackImageSrc;
             PlayImage = PlayImageSrc;
             RepeatImage = RepeatImageSrc;
         }
 
         public int Volume
         {
-            get => volume;
+            get => playerService.Volume;
             set
             {
-                volume = value;
+                playerService.Volume = value;
                 OnPropertyChanged();
             }
         }
 
         public string PositionTimeSpan
         {
-            get => positionTimeSpan;
+            get => playerService.PositionTimeSpan;
             set
             {
-                positionTimeSpan = value;
+                playerService.PositionTimeSpan = value;
                 OnPropertyChanged();
             }
         }
 
         public string DurationTimeSpan
         {
-            get => durationTimeSpan;
+            get => playerService.DurationTimeSpan;
             set
             {
-                durationTimeSpan = value;
+                playerService.DurationTimeSpan = value;
                 OnPropertyChanged();
             }
         }
 
         public ImageSource Image
         {
-            get => image;
+            get => playerService.Image;
             set
             {
-                image = value;
+                playerService.Image = value;
                 OnPropertyChanged();
             }
         }
 
         public ImageSource PlayImage
         {
-            get => playImage;
+            get => playerService.PlayImage;
             set
             {
-                playImage = value;
+                playerService.PlayImage = value;
                 OnPropertyChanged();
             }
         }
 
         public ImageSource RepeatImage
         {
-            get => repeatImage;
+            get => playerService.RepeatImage;
             set
             {
-                repeatImage = value;
+                playerService.RepeatImage = value;
                 OnPropertyChanged();
             }
         }
 
         public int Duration
         {
-            get => duration;
+            get => playerService.Duration;
             set
             {
-                duration = value;
+                playerService.Duration = value;
                 OnPropertyChanged();
             }
         }
 
         public int Position
         {
-            get => position;
+            get => playerService.Position;
             set
             {
-                position = value;
+                playerService.Position = value;
                 OnPropertyChanged();
             }
         }
 
         public string Artist
         {
-            get => artist;
+            get => playerService.Artist;
             set
             {
-                artist = value;
+                playerService.Artist = value;
                 OnPropertyChanged();
             }
         }
 
         public string Title
         {
-            get => title;
+            get => playerService.Title;
             set
             {
-                title = value;
+                playerService.Title = value;
                 OnPropertyChanged();
             }
         }
@@ -169,6 +162,7 @@ namespace Siren.ViewModels.Navigation
         public Command NextCommand { get; set; }
         public Command PrevCommand { get; set; }
         public Command RepeatCommand { get; set; }
+        public Command PlaylistCommand { get; set; }
 
         public void OnVolumeChangedEventHandler(object obj, ValueEventArgs e)
         {
@@ -177,7 +171,7 @@ namespace Siren.ViewModels.Navigation
 
         public async void OnPositionChangedEventHandler(object obj, ValueEventArgs e)
         {
-            var diff = e.Value - prevPosition;
+            var diff = e.Value - playerService.PrevPosition;
             if (diff > 1 || diff < 0)
             {
                 await CrossMediaManager.Current.SeekTo(TimeSpan.FromSeconds(e.Value));
@@ -192,35 +186,23 @@ namespace Siren.ViewModels.Navigation
 
         private async void PlayPauseClicked(object obj)
         {
-            if (!isLoaded)
+            var mediaItem = await playerService.PlayPause();
+            if (mediaItem != null)
             {
-                var track = await audioService.PlayAll();
-                await UpdateTrackData(track);
-                isLoaded = true;
-                PlayImage = PauseImageSrc;
-                return;
-            }
-
-            if (CrossMediaManager.Current.IsPlaying())
-            {
-                PlayImage = PlayImageSrc;
-                await CrossMediaManager.Current.Pause();
-            }
-            else
-            {
-                PlayImage = PauseImageSrc;
-                await CrossMediaManager.Current.Play();
+                await UpdateTrackData(mediaItem);
             }
         }
 
         private async void NextClicked(object obj)
         {
-            await CrossMediaManager.Current.PlayNext();
+            var mediaItem = await playerService.Next();
+            await UpdateTrackData(mediaItem);
         }
 
         private async void PrevClicked(object obj)
         {
-            await CrossMediaManager.Current.PlayPrevious();
+            var mediaItem = await playerService.Prev();
+            await UpdateTrackData(mediaItem);
         }
 
         private void RepeatClicked(object obj)
@@ -235,6 +217,12 @@ namespace Siren.ViewModels.Navigation
                 CrossMediaManager.Current.RepeatMode = RepeatMode.One;
                 RepeatImage = RepeatActiveImageSrc;
             }
+        }
+
+        private async void PlaylistClicked(object obj)
+        {
+            var songsPage = new SongsPage();
+            await page.Navigation.PushAsync(songsPage);
         }
 
         private async Task UpdateTrackData(IMediaItem track)
@@ -257,7 +245,7 @@ namespace Siren.ViewModels.Navigation
 
         private void PositionChanged(object obj, PositionChangedEventArgs args)
         {
-            prevPosition = position;
+            playerService.PrevPosition = playerService.Position;
             PositionTimeSpan = args.Position.ToString(@"mm\:ss");
             Position = (int)args.Position.TotalSeconds;
         }

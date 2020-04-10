@@ -1,5 +1,9 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
+using Siren.Contracts.Models.Profile;
+using Siren.Contracts.Services;
+using Siren.Models.Navigation;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using ProfileModel = Siren.Models.Profile;
@@ -12,14 +16,30 @@ namespace Siren.ViewModels.Social
     [Preserve(AllMembers = true)]
     public class SocialProfileViewModel : BaseViewModel
     {
+        private const string FollowText = "FOLLOW";
+        private const string UnfollowText = "UNFOLLOW";
+
+        private readonly IUserService userService;
+
         #region Fields
+
+        private readonly string userId;
+
+        private readonly Page page;
 
         private ObservableCollection<ProfileModel> interests;
 
-        private ObservableCollection<ProfileModel> connnections;
+        private ObservableCollection<ProfileModel> connections;
+
+        private ObservableCollection<Song> songsPageList;
 
         private ObservableCollection<string> pictures;
 
+        private UserProfileInfo userProfileInfo;
+
+        private string headerImagePath;
+
+        private string followButtonText;
         #endregion
 
         #region Constructor
@@ -27,55 +47,11 @@ namespace Siren.ViewModels.Social
         /// <summary>
         /// Initializes a new instance for the <see cref="SocialProfileViewModel" /> class.
         /// </summary>
-        public SocialProfileViewModel()
+        public SocialProfileViewModel(string userId, IUserService userService, Page page)
         {
-            this.HeaderImagePath = App.BaseImageUrl + "Album2.png";
-            this.ProfileImage = App.BaseImageUrl + "ProfileImage16.png";
-            this.ProfileName = "Lela Cortez";
-            this.Designation = "Designer";
-            this.State = "San Francisco";
-            this.Country = "CA";
-            this.About = "I’m a UMN graduate (go Gophers!) and Minnesota native, but I’m already loving my new home in the Golden Gate City! I can’t wait to explore more of the great music scene here.";
-            this.PostsCount = 8;
-            this.FollowersCount = 45;
-            this.FollowingCount = 45;
-
-            this.Interests = new ObservableCollection<ProfileModel>()
-            {
-                 new ProfileModel { Name = "Food", ImagePath = App.BaseImageUrl + "Recipe12.png" },
-                 new ProfileModel { Name = "Travel", ImagePath = App.BaseImageUrl + "Album5.png" },
-                 new ProfileModel { Name = "Music", ImagePath = App.BaseImageUrl + "ArticleImage7.jpg" },
-                 new ProfileModel { Name = "Bags", ImagePath = App.BaseImageUrl + "Accessories.png" },
-                 new ProfileModel { Name = "Market", ImagePath = App.BaseImageUrl + "PersonalCare.png" },
-                 new ProfileModel { Name = "Food", ImagePath = App.BaseImageUrl + "Recipe12.png" },
-                 new ProfileModel { Name = "Travel", ImagePath = App.BaseImageUrl + "Album5.png" },
-                 new ProfileModel { Name = "Music", ImagePath = App.BaseImageUrl + "ArticleImage7.jpg" },
-                 new ProfileModel { Name = "Bags", ImagePath = App.BaseImageUrl + "Accessories.png" },
-                 new ProfileModel { Name = "Market", ImagePath = App.BaseImageUrl + "PersonalCare.png" },
-            };
-
-            this.Connections = new ObservableCollection<ProfileModel>()
-            {
-                 new ProfileModel { Name = "Rose King", ImagePath = App.BaseImageUrl + "ProfileImage7.png" },
-                 new ProfileModel { Name = "Jeanette Bell", ImagePath = App.BaseImageUrl + "ProfileImage9.png" },
-                 new ProfileModel { Name = "Lily Castro", ImagePath = App.BaseImageUrl + "ProfileImage10.png" },
-                 new ProfileModel { Name = "Susie Moss", ImagePath = App.BaseImageUrl + "ProfileImage11.png" },
-                 new ProfileModel { Name = "Rose King", ImagePath = App.BaseImageUrl + "ProfileImage7.png" },
-                 new ProfileModel { Name = "Jeanette Bell", ImagePath = App.BaseImageUrl + "ProfileImage9.png" },
-                 new ProfileModel { Name = "Lily Castro", ImagePath = App.BaseImageUrl + "ProfileImage10.png" },
-                 new ProfileModel { Name = "Susie Moss", ImagePath = App.BaseImageUrl + "ProfileImage11.png" },
-            };
-
-            this.Pictures = new ObservableCollection<string>()
-            {
-                 App.BaseImageUrl + "ProfileImage8.png",
-                 App.BaseImageUrl + "Album6.png",
-                 App.BaseImageUrl + "ArticleImage4.jpg",
-                 App.BaseImageUrl + "Recipe17.png",
-                 App.BaseImageUrl + "ArticleImage5.jpg",
-                 App.BaseImageUrl + "Mask.png",
-            };
-
+            this.userId = userId;
+            this.userService = userService;
+            UpdateProfileInfo();
             this.FollowCommand = new Command(this.FollowClicked);
             this.AddConnectionCommand = new Command(this.AddConnectionClicked);
             this.ImageTapCommand = new Command(this.ImageClicked);
@@ -86,6 +62,7 @@ namespace Siren.ViewModels.Social
 
         #region Commands
 
+        private Command<object> addCommand;
         /// <summary>
         /// Gets or sets the command that is executed when the Follow button is clicked.
         /// </summary>
@@ -106,10 +83,21 @@ namespace Siren.ViewModels.Social
         /// </summary>
         public ICommand ProfileSelectedCommand { get; set; }
 
+        public Command<object> AddCommand => addCommand ?? (addCommand = new Command<object>(AddTrackClicked));
+
         #endregion
 
         #region Properties
 
+        public UserProfileInfo UserProfileInfo
+        {
+            get => userProfileInfo;
+            set
+            {
+                userProfileInfo = value;
+                OnPropertyChanged();
+            }
+        }
         /// <summary>
         /// Gets or sets the interests collection.
         /// </summary>
@@ -127,6 +115,16 @@ namespace Siren.ViewModels.Social
             }
         }
 
+        public ObservableCollection<Song> SongsPageList
+        {
+            get => songsPageList;
+            set
+            {
+                songsPageList = value;
+                OnPropertyChanged();
+            }
+        }
+
         /// <summary>
         /// Gets or sets the connections collection.
         /// </summary>
@@ -134,12 +132,12 @@ namespace Siren.ViewModels.Social
         {
             get
             {
-                return this.connnections;
+                return this.connections;
             }
 
             set
             {
-                this.connnections = value;
+                this.connections = value;
                 OnPropertyChanged();
             }
         }
@@ -161,55 +159,28 @@ namespace Siren.ViewModels.Social
             }
         }
 
+        public string FollowButtonText
+        {
+            get => followButtonText;
+            set
+            {
+                followButtonText = value;
+                OnPropertyChanged();
+            }
+        }
+
         /// <summary>
         /// Gets or sets the header image path.
         /// </summary>
-        public string HeaderImagePath { get; set; }
-
-        /// <summary>
-        /// Gets or sets the profile image.
-        /// </summary>
-        public string ProfileImage { get; set; }
-
-        /// <summary>
-        /// Gets or sets the profile name
-        /// </summary>
-        public string ProfileName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the designation
-        /// </summary>
-        public string Designation { get; set; }
-
-        /// <summary>
-        /// Gets or sets the state
-        /// </summary>
-        public string State { get; set; }
-
-        /// <summary>
-        /// Gets or sets the country
-        /// </summary>
-        public string Country { get; set; }
-
-        /// <summary>
-        /// Gets or sets the about
-        /// </summary>
-        public string About { get; set; }
-
-        /// <summary>
-        /// Gets or sets the posts count
-        /// </summary>
-        public int PostsCount { get; set; }
-
-        /// <summary>
-        /// Gets or sets the followers count
-        /// </summary>
-        public int FollowersCount { get; set; }
-
-        /// <summary>
-        /// Gets or sets the followings count
-        /// </summary>
-        public int FollowingCount { get; set; }
+        public string HeaderImagePath
+        {
+            get => headerImagePath;
+            set
+            {
+                headerImagePath = value;
+                OnPropertyChanged();
+            }
+        }
 
         #endregion
 
@@ -219,9 +190,34 @@ namespace Siren.ViewModels.Social
         /// Invoked when the Follow button is clicked.
         /// </summary>
         /// <param name="obj">The Object</param>
-        private void FollowClicked(object obj)
+        private async void FollowClicked(object obj)
         {
-            // Do something
+            if (UserProfileInfo.IsFollowed)
+            {
+                var unfollowResult = await userService.Unfollow(userId);
+                FollowButtonText = unfollowResult ? FollowText : UnfollowText;
+            }
+            else
+            {
+                var followResult = await userService.Follow(userId);
+                FollowButtonText = followResult ? UnfollowText : FollowText;
+            }
+
+            UpdateProfileInfo();
+        }
+
+        private async void AddTrackClicked(object obj)
+        {
+            var trackId = (int)obj;
+            var result = await userService.AddTrack(trackId);
+            if (result)
+            {
+                await page.DisplayAlert("Info", "Track was added to your library", "OK");
+            }
+            else
+            {
+                await page.DisplayAlert("Info", "You've already added this track", "OK");
+            }
         }
 
         /// <summary>
@@ -249,6 +245,34 @@ namespace Siren.ViewModels.Social
         private void ProfileClicked(object obj)
         {
             // Do something
+        }
+
+        private async void UpdateProfileInfo()
+        {
+            UserProfileInfo = await userService.GetUserProfileInfo(userId);
+            var songs = await userService.GetUserTracks(userId);
+            SongsPageList = new ObservableCollection<Song>(songs.Select(s => new Song
+            {
+                Composer = s.Artist,
+                SongName = s.Title,
+                Id = s.Id
+            }));
+            HeaderImagePath = "";
+            FollowButtonText = UserProfileInfo.IsFollowed ? UnfollowText : FollowText;
+
+            Interests = new ObservableCollection<ProfileModel>()
+            {
+                 new ProfileModel { Name = "Food", ImagePath = App.BaseImageUrl + "Recipe12.png" },
+                 new ProfileModel { Name = "Travel", ImagePath = App.BaseImageUrl + "Album5.png" },
+                 new ProfileModel { Name = "Music", ImagePath = App.BaseImageUrl + "ArticleImage7.jpg" },
+                 new ProfileModel { Name = "Bags", ImagePath = App.BaseImageUrl + "Accessories.png" },
+                 new ProfileModel { Name = "Market", ImagePath = App.BaseImageUrl + "PersonalCare.png" },
+                 new ProfileModel { Name = "Food", ImagePath = App.BaseImageUrl + "Recipe12.png" },
+                 new ProfileModel { Name = "Travel", ImagePath = App.BaseImageUrl + "Album5.png" },
+                 new ProfileModel { Name = "Music", ImagePath = App.BaseImageUrl + "ArticleImage7.jpg" },
+                 new ProfileModel { Name = "Bags", ImagePath = App.BaseImageUrl + "Accessories.png" },
+                 new ProfileModel { Name = "Market", ImagePath = App.BaseImageUrl + "PersonalCare.png" },
+            };
         }
 
         #endregion

@@ -1,5 +1,7 @@
-﻿using Siren.DataService;
-using System;
+﻿using System;
+using Ninject;
+using Siren.Contracts.Services;
+using Siren.ViewModels.Navigation;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
@@ -19,7 +21,9 @@ namespace Siren.Views.Navigation
         public SuggestionPage()
         {
             InitializeComponent();
-            this.BindingContext = SuggestionDataService.Instance.SuggestionViewModel;
+            var userService = App.Kernel.Get<IUserService>();
+            var viewModel = new SuggestionViewModel(userService, this);
+            this.BindingContext = viewModel;
 
         }
         /// <summary>

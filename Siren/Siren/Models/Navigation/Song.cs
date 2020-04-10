@@ -18,6 +18,7 @@ namespace Siren.Models.Navigation
 
         #region Properties
 
+        public int Id { get; set; }
         /// <summary>
         /// Gets or sets the name of an song.
         /// </summary>

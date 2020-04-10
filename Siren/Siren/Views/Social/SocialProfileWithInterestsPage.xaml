@@ -10,6 +10,7 @@
     xmlns:local="clr-namespace:Siren.Views.Social.Templates"
     xmlns:listviewBahavior="clr-namespace:Siren.Behaviors"
     xmlns:core="clr-namespace:Syncfusion.XForms.Core;assembly=Syncfusion.Core.XForms"
+    xmlns:graphics="clr-namespace:Syncfusion.XForms.Graphics;assembly=Syncfusion.Core.XForms"
     NavigationPage.HasNavigationBar="False"
     Shell.NavBarIsVisible="False">
 
@@ -21,10 +22,6 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <!--Binding context for social profile with connections page-->
-    <ContentPage.BindingContext>
-        <viewModel:SocialProfileViewModel/>
-    </ContentPage.BindingContext>
 
     <ContentPage.Content>
         <ScrollView>
@@ -87,7 +84,7 @@
                         Aspect="AspectFill"
                         BackgroundColor="{DynamicResource Gray-200}"                        
                         HeightRequest="80"                        
-                        Source="{Binding ProfileImage}"
+                        Source="{Binding UserProfileInfo.ImagePath}"
                         WidthRequest="80" />
                 </border:SfBorder>
 
@@ -110,7 +107,7 @@
                         Grid.Row="0"
                         Grid.Column="0"
                         Margin="0,0,0,2"
-                        Text="{Binding ProfileName}"
+                        Text="{Binding UserProfileInfo.UserName}"
                         HorizontalOptions="Start"
                         HorizontalTextAlignment="Start"
                         Style="{StaticResource HeaderLabelStyle}"/>
@@ -124,7 +121,7 @@
 
                         <!--Designation label-->
                         <Label 
-                            Text="{Binding Designation}"                            
+                            Text="{Binding UserProfileInfo.Email}"                            
                             Style="{StaticResource ContentLabelStyle}" />
 
                         <BoxView 
@@ -135,9 +132,9 @@
                             Style="{StaticResource ContentLabelStyle}">
                             <Label.FormattedText>
                                 <FormattedString>
-                                    <Span Text="{Binding State}"/>
+                                    <Span Text="{Binding UserProfileInfo.TrackArtist}"/>
                                     <Span Text=" "/>
-                                    <Span Text="{Binding Country}"/>
+                                    <Span Text="{Binding UserProfileInfo.TrackTitle}"/>
                                 </FormattedString>
                             </Label.FormattedText>
                         </Label>
@@ -151,7 +148,7 @@
                         Command="{Binding FollowCommand}"
                         Margin="24,0,0,0"
                         Style="{StaticResource SfGradientButtonStyle}"
-                        Text="FOLLOW" />
+                        Text="{Binding FollowButtonText}" />
                 </Grid>
 
                 <Grid
@@ -177,14 +174,14 @@
                     <Label 
                         Grid.Row="0"
                         Grid.Column="0"
-                        Text="{Binding PostsCount}"
+                        Text="{Binding UserProfileInfo.TracksCount}"
                         Style="{StaticResource FollowerCountLabelStyle}"/>
 
                     <!--Post title label-->
                     <Label
                         Grid.Row="1"
                         Grid.Column="0"
-                        Text="Posts"
+                        Text="Tracks"
                         Style="{StaticResource FollowerTitleLabelStyle}"/>
 
                     <BoxView
@@ -197,7 +194,7 @@
                     <Label 
                         Grid.Row="0"
                         Grid.Column="2"
-                        Text="{Binding FollowersCount}"
+                        Text="{Binding UserProfileInfo.FollowedCount}"
                         Style="{StaticResource FollowerCountLabelStyle}"/>
 
                     <!--Followers title label-->
@@ -218,7 +215,7 @@
                         Grid.Row="0"
                         Grid.Column="4"
                         HorizontalOptions="Center"
-                        Text="{Binding FollowingCount}"
+                        Text="{Binding UserProfileInfo.FollowersCount}"
                         Style="{StaticResource FollowerCountLabelStyle}"/>
 
                     <!--Following title label-->
@@ -265,7 +262,7 @@
 
                 <!--Photo title label-->
                 <Label
-                    Text="PHOTOS"
+                    Text="MUSIC"
                     FontSize="12" 
                     FontFamily="{StaticResource Montserrat-SemiBold}" 
                     LineHeight="{OnPlatform Default=-1, Android=1.5}" 
@@ -274,39 +271,119 @@
                     HorizontalTextAlignment="Start"                     
                     TextColor="{DynamicResource Gray-800}"/>
 
-                <listView:SfListView                    
-                    ItemsSource="{Binding Pictures}"
-                    ItemSize="90"
-                    Margin="16,0,0,16"
-                    ItemSpacing="4" 
-                    AutoFitMode="Height"
-                    IsScrollBarVisible="False"
-                    Padding="0,0,16,0"
+                <listView:SfListView
+                    x:Name="ListView"
+                    AllowSwiping="True"
+                    SwipeOffset="125"
+                    IsScrollBarVisible="false"
+                    ItemSpacing="0"
+                    ItemsSource="{Binding SongsPageList}"
+                    RowSpacing="0"
                     SelectionBackgroundColor="Transparent"
-                    TapCommand="{Binding ImageTapCommand}">
-
-                    <listView:SfListView.Behaviors>
-                        <listviewBahavior:SfListViewExtendHeightBehavior/>
-                    </listView:SfListView.Behaviors>
+                    TapCommand="{Binding ItemTappedCommand}"
+                    ItemSize="72">
 
                     <listView:SfListView.ItemTemplate>
                         <DataTemplate>
-                            <Grid BackgroundColor="{DynamicResource Gray-F0}">
-                                <!--Photos-->
-                                <Image 
-                                    Source="{Binding .}" 
-                                    Aspect="AspectFill"
-                                    HeightRequest="90"
-                                    BackgroundColor="{DynamicResource Gray-200}"
-                                    WidthRequest="104"/>
-                            </Grid>
+                            <ViewCell>
+                                <StackLayout >
+                                    <Grid Margin="16,0" RowSpacing="0" ColumnSpacing="0" HeightRequest="56">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <border:SfBorder
+                                              BackgroundColor="{DynamicResource Gray-200}"
+                                                 BorderColor="{DynamicResource Gray-White}"
+                                                  Style="{StaticResource ProfileBorderStyle}">
+                                            <Image HeightRequest="56" WidthRequest="56">
+                                                <Image.Source>
+                                                    <UriImageSource
+                                                             CacheValidity="14"
+                                                             CachingEnabled="true"
+                                                             Uri="{Binding SongImage}"/>
+                                                </Image.Source>
+                                            </Image>
+                                        </border:SfBorder>
+
+                                        <StackLayout
+                                                     Grid.Column="1"
+                                                     Margin="16,0"
+                                                     HorizontalOptions="FillAndExpand"
+                                                     Spacing="0"
+                                                     VerticalOptions="Center">
+
+                                            <!--  Name of the Song  -->
+                                            <Label
+                                                     
+                                                     FontFamily="{StaticResource Montserrat-Medium}"
+                                                     FontSize="16"
+                                                     LineHeight="{OnPlatform Android=1.5,
+                                                     Default=-1}"
+                                                     Text="{Binding SongName}"
+                                                     TextColor="{DynamicResource Gray-900}" />
+
+                                            <!--  Composer of the song  -->
+                                            <Label
+                                                      
+                                                      FontFamily="{StaticResource Montserrat-Medium}"
+                                                      FontSize="14"
+                                                      LineHeight="{OnPlatform Android=1.25,
+                                                         Default=-1}"
+                                                      Text="{Binding Composer}"
+                                                      TextColor="{DynamicResource Gray-700}" />
+                                        </StackLayout>
+                                    </Grid>
+
+                                    <BoxView  VerticalOptions="End" Style="{StaticResource BoxViewStyle}" />
+                                </StackLayout>
+                            </ViewCell>
                         </DataTemplate>
                     </listView:SfListView.ItemTemplate>
+                    <listView:SfListView.RightSwipeTemplate>
+                        <DataTemplate>
+                            <border:SfBorder
+                                BackgroundColor="{DynamicResource PrimaryColor}"
+                            BorderColor="Transparent"
+                            BorderWidth="0"
+                                Margin="0,0,0,20"
+                                CornerRadius="30, 0, 0, 30">
+                                <Grid>
+                                    <graphics:SfGradientView Style="{StaticResource GradientViewStyle}" />
 
-                    <listView:SfListView.LayoutManager>
-                        <listView:GridLayout SpanCount="{core:OnPlatformOrientationIntValue PhonePortrait=3,PhoneLandscape=5,TabletPortrait=6,TabletLandscape=10,Desktop=10}"/>
-                    </listView:SfListView.LayoutManager>
+                                    <Grid
+                                    Padding="15,0"
+                                    ColumnSpacing="14"
+                                    VerticalOptions="Center">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
 
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <buttons:SfButton Style="{StaticResource SwipeTemplateBorderStyle}"
+                                                          Command="{Binding Path=BindingContext.AddCommand, Source={x:Reference ListView}}"
+                                                          CommandParameter="{Binding Id}">
+                                            <buttons:SfButton.Content>
+                                                <Label Style="{StaticResource SwipeTemplateButtonStyle}" Text="{StaticResource Add}" />
+                                            </buttons:SfButton.Content>
+                                        </buttons:SfButton>
+
+                                        <buttons:SfButton
+                                        Grid.Column="1"
+                                        Style="{StaticResource SwipeTemplateBorderStyle}">
+                                            <Label Style="{StaticResource SwipeTemplateButtonStyle}" Text="{StaticResource ChatIcon}" />
+                                        </buttons:SfButton>
+
+                                    </Grid>
+                                </Grid>
+                            </border:SfBorder>
+                        </DataTemplate>
+                    </listView:SfListView.RightSwipeTemplate>
                 </listView:SfListView>
 
             </StackLayout>
