@@ -14,6 +14,7 @@ namespace Siren
             Bind<IAudioService>().To<AudioService>();
             Bind<IUserService>().To<UserService>();
             Bind<IChatService>().To<ChatService>();
+            Bind<IMapService>().To<MapService>();
             Bind<PlayerService>().ToSelf().InSingletonScope();
         }
     }

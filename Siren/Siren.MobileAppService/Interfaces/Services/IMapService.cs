@@ -7,7 +7,7 @@ namespace Siren.MobileAppService.Interfaces.Services
 {
     public interface IMapService
     {
-        Task<User> UpdateUserPosition(User user, UserPosition userPosition);
+        Task<UserMapInfo> UpdateUserPosition(User user, UserPosition userPosition);
         IEnumerable<UserMapInfo> GetMapUsers();
     }
 }

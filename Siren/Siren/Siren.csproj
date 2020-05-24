@@ -124,7 +124,6 @@
 
   <ItemGroup>
     <Folder Include="Renderers\" />
-    <Folder Include="ViewModels\Map\" />
   </ItemGroup>
 
   <ItemGroup>

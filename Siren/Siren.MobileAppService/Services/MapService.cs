@@ -20,12 +20,13 @@ namespace Siren.MobileAppService.Services
             this.mapper = mapper;
         }
 
-        public async Task<User> UpdateUserPosition(User user, UserPosition userPosition)
+        public async Task<UserMapInfo> UpdateUserPosition(User user, UserPosition userPosition)
         {
             user.Latitude = userPosition.Latitude;
             user.Longitude = userPosition.Longitude;
             var result = await userRepository.Update(user);
-            return result;
+            var userMapInfo = mapper.Map<UserMapInfo>(result);
+            return userMapInfo;
         }
 
         public IEnumerable<UserMapInfo> GetMapUsers()
