@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Siren.MobileAppService.Models;
 
 namespace Siren.MobileAppService.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20200523075145_AddedChatTables")]
+    partial class AddedChatTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -167,7 +169,9 @@ namespace Siren.MobileAppService.Migrations
 
                     b.Property<DateTime>("SentAt");
 
-                    b.Property<string>("SentById");
+                    b.Property<int>("SentById");
+
+                    b.Property<string>("SentById1");
 
                     b.Property<string>("Text");
 
@@ -175,7 +179,7 @@ namespace Siren.MobileAppService.Migrations
 
                     b.HasIndex("ConversationId");
 
-                    b.HasIndex("SentById");
+                    b.HasIndex("SentById1");
 
                     b.ToTable("Messages");
                 });
@@ -374,7 +378,7 @@ namespace Siren.MobileAppService.Migrations
 
                     b.HasOne("Siren.Contracts.Models.Identity.User", "SentBy")
                         .WithMany()
-                        .HasForeignKey("SentById");
+                        .HasForeignKey("SentById1");
                 });
 
             modelBuilder.Entity("Siren.Contracts.Models.Identity.User", b =>

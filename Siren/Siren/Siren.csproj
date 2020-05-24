@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.4" />
     <PackageReference Include="Plugin.MediaManager" Version="0.9.6" />
     <PackageReference Include="Portable.Ninject" Version="3.3.1" />
     <PackageReference Include="Syncfusion.Xamarin.Buttons" Version="17.4.0.51" />

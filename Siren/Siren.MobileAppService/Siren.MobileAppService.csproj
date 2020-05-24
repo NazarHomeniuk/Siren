@@ -16,6 +16,16 @@
     <Compile Remove="Migrations\20200227111542_UpdatedUserTable.Designer.cs" />
     <Compile Remove="Migrations\20200402105536_AddUserFollowersTable.cs" />
     <Compile Remove="Migrations\20200402105536_AddUserFollowersTable.Designer.cs" />
+    <Compile Remove="Migrations\20200413175512_AddChatTables.cs" />
+    <Compile Remove="Migrations\20200413175512_AddChatTables.Designer.cs" />
+    <Compile Remove="Migrations\20200413205127_AddChatTables.cs" />
+    <Compile Remove="Migrations\20200413205127_AddChatTables.Designer.cs" />
+    <Compile Remove="Migrations\20200413205203_AddChatTables.cs" />
+    <Compile Remove="Migrations\20200413205203_AddChatTables.Designer.cs" />
+    <Compile Remove="Migrations\20200413210753_AddChatTables.cs" />
+    <Compile Remove="Migrations\20200413210753_AddChatTables.Designer.cs" />
+    <Compile Remove="Migrations\20200522145255_AddedHashCodeToConversations.cs" />
+    <Compile Remove="Migrations\20200522145255_AddedHashCodeToConversations.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

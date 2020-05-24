@@ -21,7 +21,8 @@ namespace Siren.Views.Social
         {
             InitializeComponent();
             var userService = App.Kernel.Get<IUserService>();
-            var viewModel = new SocialProfileViewModel(userId, userService, this);
+            var chatService = App.Kernel.Get<IChatService>();
+            var viewModel = new SocialProfileViewModel(userId, userService, chatService,this);
             BindingContext = viewModel;
         }
     }

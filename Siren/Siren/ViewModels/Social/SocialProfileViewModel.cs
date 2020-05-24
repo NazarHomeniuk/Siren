@@ -4,6 +4,7 @@ using System.Windows.Input;
 using Siren.Contracts.Models.Profile;
 using Siren.Contracts.Services;
 using Siren.Models.Navigation;
+using Siren.Views.Chat;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using ProfileModel = Siren.Models.Profile;
@@ -20,6 +21,7 @@ namespace Siren.ViewModels.Social
         private const string UnfollowText = "UNFOLLOW";
 
         private readonly IUserService userService;
+        private readonly IChatService chatService;
 
         #region Fields
 
@@ -29,11 +31,7 @@ namespace Siren.ViewModels.Social
 
         private ObservableCollection<ProfileModel> interests;
 
-        private ObservableCollection<ProfileModel> connections;
-
         private ObservableCollection<Song> songsPageList;
-
-        private ObservableCollection<string> pictures;
 
         private UserProfileInfo userProfileInfo;
 
@@ -47,15 +45,17 @@ namespace Siren.ViewModels.Social
         /// <summary>
         /// Initializes a new instance for the <see cref="SocialProfileViewModel" /> class.
         /// </summary>
-        public SocialProfileViewModel(string userId, IUserService userService, Page page)
+        public SocialProfileViewModel(string userId, IUserService userService, IChatService chatService, Page page)
         {
+            this.page = page;
             this.userId = userId;
             this.userService = userService;
+            this.chatService = chatService;
             UpdateProfileInfo();
-            this.FollowCommand = new Command(this.FollowClicked);
-            this.AddConnectionCommand = new Command(this.AddConnectionClicked);
-            this.ImageTapCommand = new Command(this.ImageClicked);
-            this.ProfileSelectedCommand = new Command(this.ProfileClicked);
+            FollowCommand = new Command(FollowClicked);
+            AddConnectionCommand = new Command(AddConnectionClicked);
+            ImageTapCommand = new Command(ImageClicked);
+            ProfileSelectedCommand = new Command(ProfileClicked);
         }
 
         #endregion
@@ -63,6 +63,9 @@ namespace Siren.ViewModels.Social
         #region Commands
 
         private Command<object> addCommand;
+
+        private Command<object> chatCommand;
+
         /// <summary>
         /// Gets or sets the command that is executed when the Follow button is clicked.
         /// </summary>
@@ -85,6 +88,8 @@ namespace Siren.ViewModels.Social
 
         public Command<object> AddCommand => addCommand ?? (addCommand = new Command<object>(AddTrackClicked));
 
+        public Command<object> ChatCommand => chatCommand ?? (chatCommand = new Command<object>(ChatClicked));
+
         #endregion
 
         #region Properties
@@ -105,12 +110,12 @@ namespace Siren.ViewModels.Social
         {
             get
             {
-                return this.interests;
+                return interests;
             }
 
             set
             {
-                this.interests = value;
+                interests = value;
                 OnPropertyChanged();
             }
         }
@@ -122,40 +127,6 @@ namespace Siren.ViewModels.Social
             {
                 songsPageList = value;
                 OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the connections collection.
-        /// </summary>
-        public ObservableCollection<ProfileModel> Connections
-        {
-            get
-            {
-                return this.connections;
-            }
-
-            set
-            {
-                this.connections = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the photos collection.
-        /// </summary>
-        public ObservableCollection<string> Pictures
-        {
-            get
-            {
-                return this.pictures;
-            }
-
-            set
-            {
-                this.pictures = value;
-                this.OnPropertyChanged();
             }
         }
 
@@ -238,6 +209,13 @@ namespace Siren.ViewModels.Social
             // Do something
         }
 
+        private async void ChatClicked(object obj)
+        {
+            var conversation = await chatService.StartConversation(userId);
+            var chatPage = new ChatMessagePage(conversation);
+            await page.Navigation.PushAsync(chatPage);
+        }
+
         /// <summary>
         /// Invoked when the profile is tapped.
         /// </summary>
@@ -260,7 +238,7 @@ namespace Siren.ViewModels.Social
             HeaderImagePath = "";
             FollowButtonText = UserProfileInfo.IsFollowed ? UnfollowText : FollowText;
 
-            Interests = new ObservableCollection<ProfileModel>()
+            Interests = new ObservableCollection<ProfileModel>
             {
                  new ProfileModel { Name = "Food", ImagePath = App.BaseImageUrl + "Recipe12.png" },
                  new ProfileModel { Name = "Travel", ImagePath = App.BaseImageUrl + "Album5.png" },
@@ -271,7 +249,7 @@ namespace Siren.ViewModels.Social
                  new ProfileModel { Name = "Travel", ImagePath = App.BaseImageUrl + "Album5.png" },
                  new ProfileModel { Name = "Music", ImagePath = App.BaseImageUrl + "ArticleImage7.jpg" },
                  new ProfileModel { Name = "Bags", ImagePath = App.BaseImageUrl + "Accessories.png" },
-                 new ProfileModel { Name = "Market", ImagePath = App.BaseImageUrl + "PersonalCare.png" },
+                 new ProfileModel { Name = "Market", ImagePath = App.BaseImageUrl + "PersonalCare.png" }
             };
         }
 

@@ -9,7 +9,6 @@
     xmlns:controls="clr-namespace:Siren.Controls"
     xmlns:converter="clr-namespace:Siren.Converters"
     xmlns:gradient="clr-namespace:Syncfusion.XForms.Graphics;assembly=Syncfusion.Core.XForms"
-    xmlns:viewModel="clr-namespace:Siren.ViewModels.Chat"
     BackgroundColor="{DynamicResource Gray-White}"
     NavigationPage.HasNavigationBar="False">
 
@@ -23,10 +22,6 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </ContentPage.Resources>
-
-    <ContentPage.BindingContext>
-        <viewModel:RecentChatViewModel />
-    </ContentPage.BindingContext>
 
     <ContentPage.Content>
         <StackLayout Spacing="0">

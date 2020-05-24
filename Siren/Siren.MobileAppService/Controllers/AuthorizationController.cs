@@ -43,7 +43,8 @@ namespace Siren.MobileAppService.Controllers
                     return Ok(new AuthorizationResult
                     {
                         IsSuccess = true,
-                        Token = GenerateJwtToken(loginRequest.Email, user)
+                        Token = GenerateJwtToken(loginRequest.Email, user),
+                        UserId = user.Id
                     });
                 }
             }
@@ -72,7 +73,8 @@ namespace Siren.MobileAppService.Controllers
                 return Ok(new AuthorizationResult
                 {
                     IsSuccess = true,
-                    Token = GenerateJwtToken(signUpRequest.Email, user)
+                    Token = GenerateJwtToken(signUpRequest.Email, user),
+                    UserId = user.Id
                 });
             }
 

@@ -1,4 +1,7 @@
 ﻿using System;
+using Ninject;
+using Siren.Contracts.Services;
+using Siren.ViewModels.Chat;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
@@ -18,6 +21,9 @@ namespace Siren.Views.Chat
         public RecentChatPage()
         {
             InitializeComponent();
+            var chatService = App.Kernel.Get<IChatService>();
+            var profileService = App.Kernel.Get<IProfileService>();
+            BindingContext = new RecentChatViewModel(chatService, profileService, this);
         }
 
         /// <summary>

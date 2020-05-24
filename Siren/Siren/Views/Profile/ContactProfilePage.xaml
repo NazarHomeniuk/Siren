@@ -8,7 +8,6 @@
     xmlns:helper="clr-namespace:Siren.Helpers"
     xmlns:syncfusion="clr-namespace:Syncfusion.ListView.XForms;assembly=Syncfusion.SfListView.XForms"
     xmlns:graphics="clr-namespace:Syncfusion.XForms.Graphics;assembly=Syncfusion.Core.XForms"
-    xmlns:avatarView="clr-namespace:Syncfusion.XForms.AvatarView;assembly=Syncfusion.Core.XForms"
     Title="Contact Profile Page"
     NavigationPage.HasNavigationBar="False">
 

@@ -10,6 +10,8 @@ namespace Siren.Models.Chat
     {
         #region Public Properties
 
+        public int Id { get; set; }
+
         /// <summary>
         /// Gets or sets the profile image path.
         /// </summary>

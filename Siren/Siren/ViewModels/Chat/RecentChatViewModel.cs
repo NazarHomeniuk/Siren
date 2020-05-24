@@ -1,9 +1,16 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.SignalR.Client;
+using Siren.Contracts.Services;
 using Siren.Models.Chat;
+using Siren.Views.Chat;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
+using ItemTappedEventArgs = Syncfusion.ListView.XForms.ItemTappedEventArgs;
 
 namespace Siren.ViewModels.Chat
 {
@@ -13,13 +20,18 @@ namespace Siren.ViewModels.Chat
     [Preserve(AllMembers = true)]
     public class RecentChatViewModel : INotifyPropertyChanged
     {
+        private readonly HubConnection hubConnection;
+        private readonly RecentChatPage page;
+        private readonly IChatService chatService;
+        private readonly IProfileService profileService;
+
         #region Fields
 
         private ObservableCollection<ChatDetail> chatItems;
 
-        private string profileImage = App.BaseImageUrl + "ProfileImage1.png";
-
         private Command itemSelectedCommand;
+
+        private string profileImage;
 
         #endregion
 
@@ -27,165 +39,23 @@ namespace Siren.ViewModels.Chat
         /// <summary>
         /// Initializes a new instance of the <see cref="RecentChatViewModel" /> class.
         /// </summary>
-        public RecentChatViewModel()
+        public RecentChatViewModel(IChatService chatService, IProfileService profileService, RecentChatPage page)
         {
-            this.ChatItems = new ObservableCollection<ChatDetail>
-            {
-                new ChatDetail
-                {
-                    ImagePath = App.BaseImageUrl + "ProfileImage2.png",
-                    SenderName = "Alice Russell",
-                    MessageType = "Text",
-                    Message = "https://app.syncfusion",
-                    Time = "15 min",
-                    NotificationType = "New"
-                },
-                new ChatDetail
-                {
-                    ImagePath = App.BaseImageUrl + "ProfileImage3.png",
-                    SenderName = "Danielle Schneider",
-                    MessageType = "Audio",
-                    Time = "23 min",
-                    AvailableStatus = "Available",
-                    NotificationType = "Viewed"
-                },
-                new ChatDetail
-                {
-                    ImagePath = App.BaseImageUrl + "ProfileImage4.png",
-                    SenderName = "Jessica Park",
-                    MessageType = "Text",
-                    Message = "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-                    Time = "1 hr",
-                    NotificationType = "New"
-                },
-                new ChatDetail
-                {
-                    ImagePath = App.BaseImageUrl + "ProfileImage5.png",
-                    SenderName = "Julia Grant",
-                    MessageType = "Video",
-                    Time = "3 hr",
-                    AvailableStatus = "Available",
-                    NotificationType = "Received"
-                },
-                new ChatDetail
-                {
-                    ImagePath = App.BaseImageUrl + "ProfileImage6.png",
-                    SenderName = "kyle Greene",
-                    MessageType = "Contact",
-                    Message = "Jhone Deo Sync",
-                    Time = "Yesterday",
-                    NotificationType = "Viewed"
-                },
-                new ChatDetail
-                {
-                    ImagePath = App.BaseImageUrl + "ProfileImage7.png",
-                    SenderName = "Danielle Booker",
-                    MessageType = "Text",
-                    Message = "Val Geisier is a writer who",
-                    Time = "Jan 30",
-                    AvailableStatus = "Available",
-                    NotificationType = "Sent"
-                },
-                new ChatDetail
-                {
-                    ImagePath = App.BaseImageUrl + "ProfileImage8.png",
-                    SenderName = "Jazmine Simmons",
-                    MessageType = "Text",
-                    Message = "Contrary to popular belief, Lorem Ipsum is not simply random text." +
-                              "It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.",
-                    Time = "12/8/2018",
-                    NotificationType = "Sent"
-                },
-                new ChatDetail
-                {
-                    ImagePath = App.BaseImageUrl + "ProfileImage9.png",
-                    SenderName = "Ira Membrit",
-                    MessageType = "Photo",
-                    Time = "8/8/2018",
-                    AvailableStatus = "Available",
-                    NotificationType = "Viewed"
-                },
-                new ChatDetail
-                {
-                    ImagePath = App.BaseImageUrl + "ProfileImage10.png",
-                    MessageType = "Text",
-                    Message = "A customer who bought your",
-                    SenderName = "Serina Willams",
-                    Time = "10/6/2018",
-                    NotificationType = "Sent"
-                },
-                 new ChatDetail
-                 {
-                    ImagePath = App.BaseImageUrl + "ProfileImage11.png",
-                    SenderName = "Alise Valasquez",
-                    MessageType = "Text",
-                    Message = "Syncfusion components help you deliver applications with great user experiences across iOS, Android, and Universal Windows Platform from a single code base.",
-                    Time = "2/5/2018",
-                    NotificationType = "New"
-                },
-                new ChatDetail
-                {
-                    ImagePath = App.BaseImageUrl + "ProfileImage12.png",
-                    SenderName = "Allie Bellew",
-                    MessageType = "Audio",
-                    Time = "24/4/2018",
-                    AvailableStatus = "Available",
-                    NotificationType = "Viewed"
-                },
-                new ChatDetail
-                {
-                    ImagePath = App.BaseImageUrl + "ProfileImage13.png",
-                    SenderName = "Navya Sharma",
-                    MessageType = "Text",
-                    Message = "https://www.syncfusion.com",
-                    Time = "10/4/2018",
-                    NotificationType = "New"
-                },
-                new ChatDetail
-                {
-                    ImagePath = App.BaseImageUrl + "ProfileImage14.png",
-                    SenderName = "Carly Ling",
-                    MessageType = "Video",
-                    Time = "22/3/2018",
-                    AvailableStatus = "Available",
-                    NotificationType = "Received"
-                },
-                new ChatDetail
-                {
-                    ImagePath = App.BaseImageUrl + "ProfileImage15.png",
-                    SenderName = "Diayana Sebastine",
-                    MessageType = "Contact",
-                    Message = "Kishore Nisanth",
-                    Time = "15/3/2018",
-                    NotificationType = "Viewed"
-                },
-                new ChatDetail
-                {
-                    ImagePath = App.BaseImageUrl + "ProfileImage16.png",
-                    SenderName = "Marc Sherry",
-                    MessageType = "Text",
-                    Message = "Val Geisier is a writer who",
-                    Time = "12/3/2018",
-                    AvailableStatus = "Available",
-                    NotificationType = "Sent"
-                },
-                new ChatDetail
-                {
-                    ImagePath = App.BaseImageUrl + "ProfileImage17.png",
-                    SenderName = "Dona Merina",
-                    MessageType = "Text",
-                    Message = "Contrary to popular belief, Lorem Ipsum is not simply random text." +
-                              "It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.",
-                    Time = "3/2/2018",
-                    NotificationType = "Sent"
-                },
-            };
-
-            this.MakeVoiceCallCommand = new Command(this.VoiceCallClicked);
-            this.MakeVideoCallCommand = new Command(this.VideoCallClicked);
-            this.ShowSettingsCommand = new Command(this.SettingsClicked);
-            this.MenuCommand = new Command(this.MenuClicked);
-            this.ProfileImageCommand = new Command(this.ProfileImageClicked);
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl("http://10.0.2.2:40001/chat",
+                    options => options.Headers.Add("Authorization", $"Bearer {App.Token}"))
+                .Build();
+            this.page = page;
+            this.chatService = chatService;
+            this.profileService = profileService;
+            MakeVoiceCallCommand = new Command(VoiceCallClicked);
+            MakeVideoCallCommand = new Command(VideoCallClicked);
+            ShowSettingsCommand = new Command(SettingsClicked);
+            MenuCommand = new Command(MenuClicked);
+            ProfileImageCommand = new Command(ProfileImageClicked);
+            Init();
+            hubConnection.On<string, string>("Receive", (s, s1) => Init());
+            page.Appearing += PageOnAppearing;
         }
         #endregion
 
@@ -207,13 +77,13 @@ namespace Siren.ViewModels.Chat
         {
             get
             {
-                return this.profileImage;
+                return profileImage;
             }
 
             set
             {
-                this.profileImage = value;
-                this.NotifyPropertyChanged();
+                profileImage = value;
+                NotifyPropertyChanged();
             }
         }
 
@@ -222,20 +92,17 @@ namespace Siren.ViewModels.Chat
         /// </summary>
         public ObservableCollection<ChatDetail> ChatItems
         {
-            get
-            {
-                return this.chatItems;
-            }
+            get => chatItems;
 
             set
             {
-                if (this.chatItems == value)
+                if (chatItems == value)
                 {
                     return;
                 }
 
-                this.chatItems = value;
-                this.NotifyPropertyChanged();
+                chatItems = value;
+                NotifyPropertyChanged();
             }
         }
 
@@ -267,7 +134,7 @@ namespace Siren.ViewModels.Chat
         /// </summary>
         public Command ItemSelectedCommand
         {
-            get { return this.itemSelectedCommand ?? (this.itemSelectedCommand = new Command(this.ItemSelected)); }
+            get { return itemSelectedCommand ?? (itemSelectedCommand = new Command(ItemSelected)); }
         }
 
         /// <summary>
@@ -285,15 +152,19 @@ namespace Siren.ViewModels.Chat
         /// <param name="propertyName">Property name</param>
         public void NotifyPropertyChanged([CallerMemberName]string propertyName = null)
         {
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary>
         /// Invoked when an item is selected.
         /// </summary>
-        private void ItemSelected(object selectedItem)
+        private async void ItemSelected(object selectedItem)
         {
-            // Do something
+            var item = (ItemTappedEventArgs) selectedItem;
+            var detail = (ChatDetail) item.ItemData;
+            var conversation = await chatService.GetConversation(detail.Id);
+            var chatMessagePage = new ChatMessagePage(conversation);
+            await page.Navigation.PushAsync(chatMessagePage);
         }
 
         /// <summary>
@@ -341,5 +212,27 @@ namespace Siren.ViewModels.Chat
         }
 
         #endregion
+
+        private async void Init()
+        {
+            var conversations = await chatService.GetConversations();
+            ChatItems = new ObservableCollection<ChatDetail>(conversations.Select(c => new ChatDetail
+            {
+                Id = c.Id,
+                Message = c.Messages.Any() ? c.Messages.OrderByDescending(m => m.SentAt).First().Text : "No messages",
+                Time = c.Messages.Any() ? c.Messages.OrderByDescending(m => m.SentAt).First().SentAt.ToString(CultureInfo.InvariantCulture) : DateTime.Now.ToString("dd/MM/yyyy"),
+                SenderName = c.Participants.First(p => p.UserId != App.UserId).User.UserName,
+                ImagePath = App.BaseImageUrl + c.Participants.First(p => p.UserId != App.UserId).User.Id,
+                MessageType = "Text",
+                NotificationType = "Viewed",
+            }));
+            var profileInfo = await profileService.GetCurrentUserInfo();
+            ProfileImage = profileInfo.ImagePath;
+        }
+
+        private void PageOnAppearing(object sender, EventArgs e)
+        {
+            Init();
+        }
     }
 }

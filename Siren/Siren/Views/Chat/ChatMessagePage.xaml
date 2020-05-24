@@ -24,10 +24,6 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <ContentPage.BindingContext>
-        <viewModel:ChatMessageViewModel />
-    </ContentPage.BindingContext>
-
     <ContentPage.Content>
 
         <Grid>

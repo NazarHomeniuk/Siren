@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
+using Siren.Contracts.Models.Chat;
 using Siren.Contracts.Models.Profile;
 
 namespace Siren.Contracts.Models.Identity
@@ -7,5 +9,6 @@ namespace Siren.Contracts.Models.Identity
     {
         public int? TrackId { get; set; }
         public Track Track { get; set; }
+        public List<ConversationUser> Conversations { get; set; }
     }
 }

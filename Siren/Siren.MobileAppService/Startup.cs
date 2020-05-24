@@ -33,7 +33,10 @@ namespace Siren.MobileAppService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc()
+                .AddJsonOptions(x =>
+                    x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.Configure<IdentityConfig>(Configuration.GetSection("Authentication"));
 
             services.AddScoped<IProfilePhotoRepository, ProfilePhotoRepository>();
@@ -41,9 +44,13 @@ namespace Siren.MobileAppService
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserFollowerRepository, UserFollowerRepository>();
             services.AddScoped<IUserTrackRepository, UserTrackRepository>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IConversationRepository, ConversationRepository>();
+            services.AddScoped<IConversationUserRepository, ConversationUserRepository>();
             services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<ITrackService, TrackService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IChatService, ChatService>();
 
             var connectionString = Configuration["ConnectionString:Siren"];
             services.AddDbContext<DataContext>(opts => opts.UseSqlServer(connectionString));
@@ -86,6 +93,8 @@ namespace Siren.MobileAppService
             {
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
             });
+
+            services.AddSignalR();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -107,6 +116,11 @@ namespace Siren.MobileAppService
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
+
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<ChatHub>("/chat");
             });
         }
     }

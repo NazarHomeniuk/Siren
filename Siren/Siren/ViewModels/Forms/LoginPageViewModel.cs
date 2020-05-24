@@ -108,6 +108,7 @@ namespace Siren.ViewModels.Forms
             {
                 App.IsUserLoggedId = true;
                 App.Token = result.Token;
+                App.UserId = result.UserId;
                 Application.Current.MainPage = new NavigationPage(new BottomNavigationPage());
             }
             else

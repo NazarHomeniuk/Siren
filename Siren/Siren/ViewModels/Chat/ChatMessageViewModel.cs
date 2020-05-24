@@ -1,8 +1,14 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR.Client;
+using Siren.Contracts.Models.Chat;
+using Siren.Contracts.Services;
 using Siren.Models.Chat;
+using Siren.Views.Chat;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 
@@ -16,24 +22,23 @@ namespace Siren.ViewModels.Chat
     {
         #region Fields
 
-        /// <summary>
-        /// Stores the message text in an array. 
-        /// </summary>
-        private readonly string[] descriptions = { "Hi, can you tell me the specifications of the Dell Inspiron 5370 laptop?",
-            " * Processor: Intel Core i5-8250U processor " +
-            "\n" + " * OS: Pre-loaded Windows 10 with lifetime validity" +
-            "\n" + " * Display: 13.3-inch FHD (1920 x 1080) LED display" +
-            "\n" + " * Memory: 8GB DDR RAM with Intel UHD 620 Graphics" +
-            "\n" + " * Battery: Lithium battery",
-            "How much battery life does it have with wifi and without?",
-            "Approximately 5 hours with wifi. About 7 hours without.",
-        };
+        private readonly IChatService chatService;
 
-        private string profileName = "Alex Russell";
+        private readonly ChatMessagePage page;
+
+        private readonly HubConnection hubConnection;
+
+        private readonly Conversation conversation;
+
+        private bool isBusy;
+
+        private bool isConnected;
+
+        private string profileName;
+
+        private string profileImage;
 
         private string newMessage;
-
-        private string profileImage = App.BaseImageUrl + "ProfileImage3.png";
 
         private ObservableCollection<ChatMessage> chatMessageInfo = new ObservableCollection<ChatMessage>();
 
@@ -43,18 +48,39 @@ namespace Siren.ViewModels.Chat
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatMessageViewModel" /> class.
         /// </summary>
-        public ChatMessageViewModel()
+        public ChatMessageViewModel(IChatService chatService, ChatMessagePage page, Conversation conversation)
         {
-            this.MakeVoiceCall = new Command(this.VoiceCallClicked);
-            this.MakeVideoCall = new Command(this.VideoCallClicked);
-            this.MenuCommand = new Command(this.MenuClicked);
-            this.ShowCamera = new Command(this.CameraClicked);
-            this.SendAttachment = new Command(this.AttachmentClicked);
-            this.SendCommand = new Command(this.SendClicked);
-            this.BackCommand = new Command(this.BackButtonClicked);
-            this.ProfileCommand = new Command(this.ProfileClicked);
+            this.chatService = chatService;
+            this.page = page;
+            this.conversation = conversation;
+            var users = conversation.Participants.Where(u => u.UserId != App.UserId).ToList();
+            profileName = string.Join(",", users.Select(u => u.User.UserName));
+            profileImage = App.BaseImageUrl + users.First().User.Id;
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl("http://10.0.2.2:40001/chat",
+                    options => options.Headers.Add("Authorization", $"Bearer {App.Token}"))
+                .Build();
+            IsConnected = false;
+            IsBusy = false;
+            hubConnection.Closed += async error =>
+            {
+                IsConnected = false;
+                await Task.Delay(5000);
+                await Connect();
+            };
+            InitMessages();
+            hubConnection.On<string, string>("Receive", ReceiveMessage);
 
-            this.GenerateMessageInfo();
+            MakeVoiceCall = new Command(VoiceCallClicked);
+            MakeVideoCall = new Command(VideoCallClicked);
+            MenuCommand = new Command(MenuClicked);
+            ShowCamera = new Command(CameraClicked);
+            SendAttachment = new Command(AttachmentClicked);
+            SendCommand = new Command(SendClicked);
+            BackCommand = new Command(BackButtonClicked);
+            ProfileCommand = new Command(ProfileClicked);
+
+            GenerateMessageInfo();
         }
 
         #endregion
@@ -69,20 +95,42 @@ namespace Siren.ViewModels.Chat
 
         #region Public Properties
 
+        public bool IsConnected
+        {
+            get => isConnected;
+            set
+            {
+                if (isConnected != value)
+                {
+                    isConnected = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        public bool IsBusy
+        {
+            get => isBusy;
+            set
+            {
+                if (isBusy != value)
+                {
+                    isBusy = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
         /// <summary>
         /// Gets or sets the profile name.
         /// </summary>
         public string ProfileName
         {
-            get
-            {
-                return this.profileName;
-            }
+            get => profileName;
 
             set
             {
-                this.profileName = value;
-                this.NotifyPropertyChanged();
+                profileName = value;
+                NotifyPropertyChanged();
             }
         }
 
@@ -91,15 +139,11 @@ namespace Siren.ViewModels.Chat
         /// </summary>
         public string ProfileImage
         {
-            get
-            {
-                return this.profileImage;
-            }
-
+            get => profileImage;
             set
             {
-                this.profileImage = value;
-                this.NotifyPropertyChanged();
+                profileImage = value;
+                NotifyPropertyChanged();
             }
         }
 
@@ -108,15 +152,11 @@ namespace Siren.ViewModels.Chat
         /// </summary>
         public ObservableCollection<ChatMessage> ChatMessageInfo
         {
-            get
-            {
-                return this.chatMessageInfo;
-            }
-
+            get => chatMessageInfo;
             set
             {
-                this.chatMessageInfo = value;
-                this.NotifyPropertyChanged();
+                chatMessageInfo = value;
+                NotifyPropertyChanged();
             }
         }
 
@@ -125,15 +165,11 @@ namespace Siren.ViewModels.Chat
         /// </summary>
         public string NewMessage
         {
-            get
-            {
-                return this.newMessage;
-            }
-
+            get => newMessage;
             set
             {
-                this.newMessage = value;
-                this.NotifyPropertyChanged();
+                newMessage = value;
+                NotifyPropertyChanged();
             }
         }
 
@@ -185,13 +221,36 @@ namespace Siren.ViewModels.Chat
 
         #region Methods
 
+        public async Task Connect()
+        {
+            if (IsConnected)
+                return;
+            try
+            {
+                await hubConnection.StartAsync();
+                IsConnected = true;
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
+        public async Task Disconnect()
+        {
+            if (!IsConnected)
+                return;
+
+            await hubConnection.StopAsync();
+            IsConnected = false;
+        }
+
         /// <summary>
         /// The PropertyChanged event occurs when changing the value of property.
         /// </summary>
         /// <param name="propertyName">Property name</param>
         public void NotifyPropertyChanged([CallerMemberName]string propertyName = null)
         {
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary>
@@ -199,37 +258,7 @@ namespace Siren.ViewModels.Chat
         /// </summary>
         private void GenerateMessageInfo()
         {
-            var currentTime = DateTime.Now;
-            this.ChatMessageInfo = new ObservableCollection<ChatMessage>
-            {
-                new ChatMessage
-                {
-                    Message = this.descriptions[0],
-                    Time = currentTime.AddMinutes(-2517),
-                    IsReceived = true,
-                },
-                new ChatMessage
-                {
-                    Message = this.descriptions[1],
-                    Time = currentTime.AddMinutes(-2408),
-                },
-                new ChatMessage
-                {
-                    ImagePath = App.BaseImageUrl + "Electronics.png",
-                    Time = currentTime.AddMinutes(-2405),
-                },
-                new ChatMessage
-                {
-                    Message = this.descriptions[2],
-                    Time = currentTime.AddMinutes(-1103),
-                    IsReceived = true,
-                },
-                new ChatMessage
-                {
-                    Message = this.descriptions[3],
-                    Time = currentTime.AddMinutes(-1006),
-                },
-            };
+
         }
 
         /// <summary>
@@ -281,27 +310,23 @@ namespace Siren.ViewModels.Chat
         /// Invoked when the send button is clicked.
         /// </summary>
         /// <param name="obj">The object</param>
-        private void SendClicked(object obj)
+        private async void SendClicked(object obj)
         {
-            if (!string.IsNullOrWhiteSpace(this.NewMessage))
+            if (!string.IsNullOrWhiteSpace(NewMessage))
             {
-                this.ChatMessageInfo.Add(new ChatMessage
-                {
-                    Message = this.NewMessage,
-                    Time = DateTime.Now
-                });
+                await SendMessage();
             }
 
-            this.NewMessage = null;
+            NewMessage = null;
         }
 
         /// <summary>
         /// Invoked when the back button is clicked.
         /// </summary>
         /// <param name="obj">The object</param>
-        private void BackButtonClicked(object obj)
+        private async void BackButtonClicked(object obj)
         {
-            // Do something
+            await page.Navigation.PopAsync();
         }
 
         /// <summary>
@@ -310,6 +335,78 @@ namespace Siren.ViewModels.Chat
         private void ProfileClicked(object obj)
         {
             // Do something
+        }
+
+        private async Task SendMessage()
+        {
+            try
+            {
+                IsBusy = true;
+                var message = new Message
+                {
+                    ConversationId = conversation.Id,
+                    IsReceived = false,
+                    SentAt = DateTime.Now,
+                    SentById = App.UserId,
+                    Text = NewMessage
+                };
+                await chatService.SendMessage(message);
+                SendLocalMessage(profileName, NewMessage);
+                await hubConnection.InvokeAsync("Send", profileName, newMessage, conversation.Participants.First(p => p.UserId != App.UserId).UserId);
+            }
+            catch (Exception ex)
+            {
+                SendLocalMessage(string.Empty, $"Ошибка отправки: {ex.Message}");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private void SendLocalMessage(string user, string message)
+        {
+            ChatMessageInfo.Insert(ChatMessageInfo.Count, new ChatMessage
+            {
+                Message = message,
+                Time = DateTime.Now,
+                IsReceived = false
+            });
+        }
+
+        private void SendLocalMessageReceived(string user, string message)
+        {
+            ChatMessageInfo.Insert(ChatMessageInfo.Count, new ChatMessage
+            {
+                Message = message,
+                Time = DateTime.Now,
+                IsReceived = true
+            });
+        }
+
+        private void ReceiveMessage(string user, string message)
+        {
+            ChatMessageInfo.Insert(ChatMessageInfo.Count, new ChatMessage
+            {
+                Message = message,
+                Time = DateTime.Now,
+                IsReceived = true
+            });
+        }
+
+        private void InitMessages()
+        {
+            foreach (var message in conversation.Messages)
+            {
+                if (message.SentById == App.UserId)
+                {
+                    SendLocalMessage(message.SentBy.UserName, message.Text);
+                }
+                else
+                {
+                    SendLocalMessageReceived(message.SentBy.UserName, message.Text);
+                }
+            }
         }
 
         #endregion
