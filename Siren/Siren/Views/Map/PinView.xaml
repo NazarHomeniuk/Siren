@@ -1,21 +1,35 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <StackLayout xmlns="http://xamarin.com/schemas/2014/forms" 
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
-             WidthRequest="37" 
-             HeightRequest="48"
+             WidthRequest="140" 
+             HeightRequest="60"
              AnchorX="0.5"
              AnchorY="1.0"
              x:Class="Siren.Views.Map.PinView">
     <AbsoluteLayout VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
-
-        <Image Source="https://www.420in.com/420in/wp-content/uploads/2018/03/map-pin-300px.png" 
-               AbsoluteLayout.LayoutBounds="0, 0, 37, 48"
-               AbsoluteLayout.LayoutFlags="None" />
-
-        <Label Text="Test" TextColor="Red" FontSize="8" HorizontalTextAlignment="Center" 
-               BackgroundColor="Transparent" WidthRequest="100" HeightRequest="40"
-               AbsoluteLayout.LayoutBounds="8, 10, 21, 16"
-               AbsoluteLayout.LayoutFlags="None" />
+        <Frame HeightRequest="40"
+               WidthRequest="120" 
+               Padding="5, 8, 5, 8"
+               BorderColor="Accent" 
+               CornerRadius="8"
+               HasShadow="True"
+               >
+            <Grid RowSpacing="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="30"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Image Source="notrack.jpg" Grid.Column="0" Grid.Row="0" Grid.RowSpan="3"></Image>
+                <Label Text="Nazar Homeniuk" TextColor="Black" FontSize="10" Grid.Row="0" Grid.Column="1"></Label>
+                <Label Text="Artist - Title" FontSize="8" Grid.Row="1" Grid.Column="1"></Label>
+                <Label Text="Tap here to visit the profile" FontSize="6" Grid.Row="2" Grid.Column="1"></Label>
+            </Grid>
+        </Frame>
 
     </AbsoluteLayout>
 </StackLayout>

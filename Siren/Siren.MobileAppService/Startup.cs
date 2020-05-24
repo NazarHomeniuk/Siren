@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -51,6 +52,7 @@ namespace Siren.MobileAppService
             services.AddScoped<ITrackService, TrackService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IChatService, ChatService>();
+            services.AddScoped<IMapService, MapService>();
 
             var connectionString = Configuration["ConnectionString:Siren"];
             services.AddDbContext<DataContext>(opts => opts.UseSqlServer(connectionString));
@@ -95,6 +97,7 @@ namespace Siren.MobileAppService
             });
 
             services.AddSignalR();
+            services.AddAutoMapper(typeof(Startup));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

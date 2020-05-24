@@ -8,5 +8,6 @@ namespace Siren.MobileAppService.Interfaces.Repositories
     {
         IEnumerable<User> GetAll();
         Task<User> GetWithAdditionalInfo(string id);
+        Task<User> Update(User user);
     }
 }

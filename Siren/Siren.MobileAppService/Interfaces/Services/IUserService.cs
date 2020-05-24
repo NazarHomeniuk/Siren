@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Siren.Contracts.Models.Identity;
+using Siren.Contracts.Models.Map;
 using Siren.Contracts.Models.Profile;
 using Siren.Contracts.Models.Suggestion;
 

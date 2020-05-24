@@ -4,6 +4,7 @@ using Android.Runtime;
 using Android.OS;
 using MediaManager;
 using Ninject;
+using Plugin.CurrentActivity;
 
 namespace Siren.Droid
 {
@@ -24,6 +25,7 @@ namespace Siren.Droid
             kernel.Get<AppContextWrapper>().UseContext(this);
             LoadApplication(kernel.Get<App>());
             CrossMediaManager.Current.Init();
+            CrossCurrentActivity.Current.Init(this, savedInstanceState);
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {

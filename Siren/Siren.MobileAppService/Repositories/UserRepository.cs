@@ -25,5 +25,12 @@ namespace Siren.MobileAppService.Repositories
         {
             return await dataContext.Users.Include(u => u.Track).FirstOrDefaultAsync(u => u.Id == id);
         }
+
+        public async Task<User> Update(User user)
+        {
+            var result = dataContext.Users.Update(user);
+            await dataContext.SaveChangesAsync();
+            return result.Entity;
+        }
     }
 }

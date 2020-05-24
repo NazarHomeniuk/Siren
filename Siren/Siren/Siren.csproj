@@ -32,6 +32,7 @@
     <PackageReference Include="Syncfusion.Xamarin.SfProgressBar" Version="17.4.0.51" />
     <PackageReference Include="Syncfusion.Xamarin.SfRadialMenu" Version="17.4.0.51" />
     <PackageReference Include="Syncfusion.Xamarin.SfRangeSlider" Version="17.4.0.51" />
+    <PackageReference Include="Xam.Plugin.Geolocator" Version="4.5.0.6" />
     <PackageReference Include="Xam.Plugin.Media" Version="4.0.1.5" />
     <PackageReference Include="Xamarin.Forms" Version="4.4.0.991640" />  
     <PackageReference Include="Xamarin.Essentials" Version="1.4.0" />
